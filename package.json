@@ -1,0 +1,16 @@
+{
+  "name": "stove_pipe",
+  "version": "1.0.0",
+  "description": "A BLE controller for animations played over fade candy.",
+  "main": "index.js",
+  "dependencies": {
+    "bleno": "^0.4.2",
+    "chalk": "^2.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Robert Jamison",
+  "license": "ISC"
+}
