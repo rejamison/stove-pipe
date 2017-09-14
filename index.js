@@ -46,25 +46,69 @@ function Canvas() {
         for(var x = 0; x < rowCount; x++) {
             out.clearLine();
             for(var y = 0; y < this.buffer[x].length; y++) {
-                out.write(chalk.bgRgb(this.buffer[x][y].r, this.buffer[x][y].g, this.buffer[x][y].b)(' '));
+                out.write(chalk.bgRgb(this.buffer[x][y].r, this.buffer[x][y].g, this.buffer[x][y].b)('  '));
             }
             out.write('\n');
         }
     };
 
-    var counter = 0;
-    this.rotatingRainbow = function() {
+    this.fillBuffer = function(color) {
         for(var x = 0; x < this.buffer.length; x++) {
             for(var y = 0; y < this.buffer[x].length; y++) {
-                var hue = (y / 16) + (counter / 80);
-                buffer[x][y] = hsvToRgb(hue, 1, 1);
+                buffer[x][y] = color;
+            }
+        }
+    }
+
+    var TTL = 5;
+    var pixels = [];
+    this.pulsingPixels = function() {
+        if(pixels.length < 20) {
+            pixels.push({
+                ttl: TTL,
+                h: Math.random(),
+                s: 1,
+                v: 0,
+                x: Math.floor(Math.random() * 16),
+                y: Math.floor(Math.random() * 6)
+            });
+            pixels.push({
+                ttl: TTL,
+                h: Math.random(),
+                s: 1,
+                v: 0,
+                x: Math.floor(Math.random() * 16),
+                y: Math.floor(Math.random() * 6)
+            });
+        }
+
+        this.fillBuffer(new RGB(0,0,0));
+
+        for(var i = 0; i < pixels.length; i++) {
+            var p = pixels[i];
+            this.buffer[p.y][p.x] = hsvToRgb(p.h, p.s, p.v);
+            p.ttl--;
+            p.v += 1.0/TTL;
+            if(p.ttl <= 0) {
+                pixels.splice(i, 1);
+                i--;
+            }
+        }
+    };
+
+    var counter = 0;
+    this.rotatingRainbow = function() {
+        for(var y = 0; y < this.buffer.length; y++) {
+            for(var x = 0; x < this.buffer[y].length; x++) {
+                var hue = ((y + x) / 16) + (counter / 16);
+                this.buffer[y][x] = this.hsvToRgb(hue, 1, 1);
             }
         }
         counter++;
     };
 
     this.oneFrame = function() {
-        this.rotatingRainbow();
+        this.pulsingPixels();
         this.drawToConsole();
     };
 
