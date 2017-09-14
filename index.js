@@ -1,6 +1,15 @@
 process = require('process');
 chalk = require('chalk');
 
+var font = [
+    "  X   XXXX   XXXX XXX   XXXXX XXXXX  XXX  X   X  XXX      X X  X  X     X   X X   X  XXX  XXXX   XXX  XXXX   XXX  XXXXX X   X X   X X   X X   X X   X XXXXX ",
+    " X X  X   X X     X  X  X     X     X   X X   X   X       X X X   X     XX XX XX  X X   X X   X X   X X   X XX      X   X   X X   X X   X  X X   X X     X  ",
+    "X   X XXXX  X     X   X XXX   XXX   X     XXXXX   X       X XX    X     X X X X X X X   X XXXX  X   X XXXX   XX     X   X   X  X X  X X X   X     X     X   ",
+    "XXXXX X   X X     X   X X     X     X  XX X   X   X       X X X   X     X   X X  XX X   X X     X   X X X     XX    X   X   X  X X  X X X  X X    X     X   ",
+    "X   X X   X X     X  X  X     X     X   X X   X   X   X   X X  X  X     X   X X   X X   X X     X  XX X  X     XX   X   X   X   X   XX XX  X X    X    X    ",
+    "X   X XXXX   XXXX XXX   XXXXX X      XXX  X   X  XXX   XXX  X   X XXXXX X   X X   X  XXX  X      XXXX X   X  XXX    X    XXX    X    X X  X   X   X   XXXXX "
+];
+
 function hsvToRgb(h, s, v) {
     var r, g, b, i, f, p, q, t;
     if (arguments.length === 1) {
@@ -58,7 +67,34 @@ function Canvas() {
                 buffer[x][y] = color;
             }
         }
+    };
+
+    this.drawPixel = function(x, y, color) {
+        if(y >= 0 && y < buffer.length && x >= 0 && x < buffer[y].length) {
+            buffer[y][x] = color;
+        }
     }
+
+    this.drawString = function(text, xOffset, yOffset, color) {
+        for(var i = 0; i < text.length; i++) {
+            var charCode = text.charCodeAt(i);
+            if(charCode >= 65 && charCode <= 90) {
+                charCode -= 65;
+            } else if(charCode >= 97 && charCode <= 122) {
+                charCode -= 97;
+            } else {
+                continue;
+            }
+
+            for(var x = 0; x < 6; x++) {
+                for(var y = 0; y < 6; y++) {
+                    if(font[y][x + (charCode * 6)] != ' ') {
+                        this.drawPixel(x + (i * 6) + xOffset, y + yOffset, color);
+                    }
+                }
+            }
+        }
+    };
 
     var TTL = 5;
     var pixels = [];
@@ -107,8 +143,19 @@ function Canvas() {
         counter++;
     };
 
+    var text = 'MAKING IS AWESOME';
+    var counter = 16;
+    this.scrollingText = function() {
+        this.fillBuffer(new RGB(0,0,0));
+        this.drawString(text, counter, 0, new RGB(255, 0, 0));
+        counter--;
+        if(counter < (text.length * -6)) {
+            counter = 16;
+        }
+    }
+
     this.oneFrame = function() {
-        this.pulsingPixels();
+        this.scrollingText();
         this.drawToConsole();
     };
 
