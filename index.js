@@ -6,9 +6,8 @@ var FRAME_RATE = 10;
 var font = [
     "  X   XXXX   XXXX XXX   XXXXX XXXXX  XXX  X   X  XXX      X X  X  X     X   X X   X  XXX  XXXX   XXX  XXXX   XXX  XXXXX X   X X   X X   X X   X X   X XXXXX ",
     " X X  X   X X     X  X  X     X     X   X X   X   X       X X X   X     XX XX XX  X X   X X   X X   X X   X XX      X   X   X X   X X   X  X X   X X     X  ",
-    "X   X XXXX  X     X   X XXX   XXX   X     XXXXX   X       X XX    X     X X X X X X X   X XXXX  X   X XXXX   XX     X   X   X  X X  X X X   X     X     X   ",
-    "XXXXX X   X X     X   X X     X     X  XX X   X   X       X X X   X     X   X X  XX X   X X     X   X X X     XX    X   X   X  X X  X X X  X X    X     X   ",
-    "X   X X   X X     X  X  X     X     X   X X   X   X   X   X X  X  X     X   X X   X X   X X     X  XX X  X     XX   X   X   X   X   XX XX  X X    X    X    ",
+    "XXXXX XXXX  X     X   X XXX   XXX   X     XXXXX   X       X XX    X     X X X X X X X   X XXXX  X   X XXXX   XX     X   X   X  X X  X X X   X     X     X   ",
+    "X   X X   X X     X  X  X     X     X  XX X   X   X   X   X X  X  X     X   X X   X X   X X     X  XX X  X     XX   X   X   X   X   XX XX  X X    X    X    ",
     "X   X XXXX   XXXX XXX   XXXXX X      XXX  X   X  XXX   XXX  X   X XXXXX X   X X   X  XXX  X      XXXX X   X  XXX    X    XXX    X    X X  X   X   X   XXXXX "
 ];
 
@@ -48,8 +47,24 @@ function Canvas() {
         [new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255)],
         [new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255)],
         [new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255)],
-        [new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255)]
     ];
+
+    this.animation = new Rain();
+    this.frameCounter = 0;
+    this.height = this.buffer.length;
+    this.width = this.buffer[0].length;
+
+    this.initialize = function() {
+        // spit out some newlines for rendering to the console
+        for(var x = 0; x < this.height; x++) {
+            process.stdout.write('\n');
+        }
+        this.animation.initialize(this);
+    }
+
+    this.run = function() {
+        this.oneFrame();
+    }
 
     this.pushToConsole = function() {
         var out = process.stdout;
@@ -100,7 +115,7 @@ function Canvas() {
             }
 
             for(var x = 0; x < 6; x++) {
-                for(var y = 0; y < 6; y++) {
+                for(var y = 0; y < this.height; y++) {
                     if(font[y][x + (charCode * 6)] != ' ') {
                         this.drawPixel(x + (i * 6) + xOffset, y + yOffset, color);
                     }
@@ -109,34 +124,50 @@ function Canvas() {
         }
     };
 
-    this.height = function() {
-        return this.buffer.length;
-    }
-
-    this.width = function() {
-        return this.buffer[0].length;
-    }
-
     this.oneFrame = function() {
-        animation.update(this);
+        if((this.frameCounter % 20) === 0) {
+            switch(Math.floor(this.frameCounter / 20)) {
+                case 0:
+                    this.animation = new Rain();
+                    break;
+                case 1:
+                    this.animation = new PulsingPixels();
+                    break;
+                case 2:
+                    this.animation = new RotatingRainbow();
+                    break;
+                case 3:
+                    this.animation = new Equalizer();
+                    break;
+                case 4:
+                    this.animation = new GrowingLine();
+                    break;
+                case 5:
+                    this.animation = new RacingDot();
+                    break;
+                case 6:
+                    this.animation = new ScrollingText('MAKING');
+                default:
+                    this.animation = new Rain();
+                    this.frameCounter = 0;
+                    break;
+            }
+            this.animation.initialize(this);
+        }
+
+        this.animation.update(this);
         // this.pushToFadeCandy();
         this.pushToConsole();
 
         var millisToNextFrame = (1000 / FRAME_RATE) - (Date.now() % (1000 / FRAME_RATE));
         setTimeout(this.oneFrame.bind(this), millisToNextFrame);
+        this.frameCounter += 1;
     };
-
-    var animation = new Rain();
-    animation.initialize(this);
-
-    // fire it up
-    for(var x = 0; x < this.buffer.length; x++) {
-        process.stdout.write('\n');
-    }
-    this.oneFrame();
 }
 
 var canvas = new Canvas();
+canvas.initialize();
+canvas.run();
 
 function PulsingPixels() {
     this.TTL = 5;
@@ -189,8 +220,8 @@ function RotatingRainbow() {
     }
 
     this.update = function(canvas) {
-        for(var y = 0; y < canvas.height(); y++) {
-            for(var x = 0; x < canvas.width(); x++) {
+        for(var y = 0; y < canvas.height; y++) {
+            for(var x = 0; x < canvas.width; x++) {
                 var hue = ((y + x) / 16) + (this.counter / 16);
                 canvas.drawPixel(x, y, hsvToRgb(hue, 1, 1));
             }
@@ -225,7 +256,7 @@ function GrowingLine() {
     }
 
     this.update = function(canvas) {
-        if(this.counter >= (canvas.height() * canvas.width())) {
+        if(this.counter >= (canvas.height * canvas.width)) {
             canvas.fillBuffer(new RGB(0,0,0));
             this.counter = 0;
         }
@@ -257,9 +288,9 @@ function Equalizer() {
         this.hue += 20 / 360;
         this.counter = 0;
         this.bars = [];
-        for(var i = 0; i < canvas.width(); i++) {
+        for(var i = 0; i < canvas.width; i++) {
             this.bars.push({
-                max: Math.floor((Math.random() * canvas.height()) + 1),
+                max: Math.floor((Math.random() * canvas.height) + 1),
                 h: this.hue
             });
         }
@@ -272,11 +303,11 @@ function Equalizer() {
         }
 
         this.counter++;
-        for(var x = 0; x < canvas.width(); x++) {
+        for(var x = 0; x < canvas.width; x++) {
             var bar = this.bars[x];
             var bar_height = Math.floor((this.counter / 5) * bar.max);
             for(var y = 0; y < bar_height; y++) {
-                canvas.drawPixel(x, canvas.height() - y, hsvToRgb(bar.h, 1, y / canvas.height()));
+                canvas.drawPixel(x, canvas.height - y, hsvToRgb(bar.h, 1, y / canvas.height));
             }
         }
     }
@@ -307,9 +338,9 @@ function Rain() {
 
         for(var i = 0; i < this.pixels.length; i++) {
             var p = this.pixels[i];
-            canvas.drawPixel(p.x, p.y, hsvToRgb(p.h, 1, (p.y + 1) / canvas.height()));
+            canvas.drawPixel(p.x, p.y, hsvToRgb(p.h, 1, (p.y + 1) / canvas.height));
             p.y++;
-            if(p.y >= canvas.height()) {
+            if(p.y >= canvas.height) {
                 this.pixels.splice(i, 1);
                 i--;
             }
