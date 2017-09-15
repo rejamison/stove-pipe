@@ -2,6 +2,7 @@ var process = require('process');
 var chalk = require('chalk');
 var OPC = require('./opc');
 
+var FRAME_RATE = 10;
 var font = [
     "  X   XXXX   XXXX XXX   XXXXX XXXXX  XXX  X   X  XXX      X X  X  X     X   X X   X  XXX  XXXX   XXX  XXXX   XXX  XXXXX X   X X   X X   X X   X X   X XXXXX ",
     " X X  X   X X     X  X  X     X     X   X X   X   X       X X X   X     XX XX XX  X X   X X   X X   X X   X XX      X   X   X X   X X   X  X X   X X     X  ",
@@ -50,7 +51,7 @@ function Canvas() {
         [new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255)]
     ];
 
-    this.drawToConsole = function() {
+    this.pushToConsole = function() {
         var out = process.stdout;
         var rowCount = this.buffer.length;
 
@@ -64,7 +65,7 @@ function Canvas() {
         }
     };
 
-    this.drawToFadeCandy = function() {
+    this.pushToFadeCandy = function() {
         for(var y = 0; y < this.buffer.length; y++) {
             for(var x = 0; x < this.buffer[y].length; x++) {
                 client.setPixel((y * this.buffer[y].length) + x, this.buffer[y][x].g, this.buffer[y][x].r, this.buffer[y][x].b);
@@ -76,14 +77,14 @@ function Canvas() {
     this.fillBuffer = function(color) {
         for(var x = 0; x < this.buffer.length; x++) {
             for(var y = 0; y < this.buffer[x].length; y++) {
-                buffer[x][y] = color;
+                this.buffer[x][y] = color;
             }
         }
     };
 
     this.drawPixel = function(x, y, color) {
-        if(y >= 0 && y < buffer.length && x >= 0 && x < buffer[y].length) {
-            buffer[y][x] = color;
+        if(y >= 0 && y < this.buffer.length && x >= 0 && x < this.buffer[y].length) {
+            this.buffer[y][x] = color;
         }
     }
 
@@ -108,88 +109,175 @@ function Canvas() {
         }
     };
 
-    var TTL = 5;
-    var pixels = [];
-    this.pulsingPixels = function() {
-        if(pixels.length < 20) {
-            pixels.push({
-                ttl: TTL,
-                h: Math.random(),
-                s: 1,
-                v: 0,
-                x: Math.floor(Math.random() * 16),
-                y: Math.floor(Math.random() * 6)
-            });
-            pixels.push({
-                ttl: TTL,
-                h: Math.random(),
-                s: 1,
-                v: 0,
-                x: Math.floor(Math.random() * 16),
-                y: Math.floor(Math.random() * 6)
-            });
-        }
-
-        this.fillBuffer(new RGB(0,0,0));
-
-        for(var i = 0; i < pixels.length; i++) {
-            var p = pixels[i];
-            this.buffer[p.y][p.x] = hsvToRgb(p.h, p.s, p.v);
-            p.ttl--;
-            p.v += 1.0/TTL;
-            if(p.ttl <= 0) {
-                pixels.splice(i, 1);
-                i--;
-            }
-        }
-    };
-
-    var counter = 0;
-    this.rotatingRainbow = function() {
-        for(var y = 0; y < this.buffer.length; y++) {
-            for(var x = 0; x < this.buffer[y].length; x++) {
-                var hue = ((y + x) / 16) + (counter / 16);
-                this.buffer[y][x] = hsvToRgb(hue, 1, 1);
-            }
-        }
-        counter++;
-    };
-
-    var text = 'MAKING IS AWESOME';
-    var counter = 16;
-    this.scrollingText = function() {
-        this.fillBuffer(new RGB(0,0,0));
-        this.drawString(text, counter, 0, new RGB(255, 0, 0));
-        counter--;
-        if(counter < (text.length * -6)) {
-            counter = 16;
-        }
+    this.height = function() {
+        return this.buffer.length;
     }
 
-    var counter = 0;
-    this.growingLine = function() {
-        this.drawPixel(counter % 16, Math.floor(counter / 16), new RGB(0,0,255));
-        counter++;
-    }
-
-    var counter = 0;
-    this.racingDot = function() {
-        this.fillBuffer(new RGB(0,0,0));
-        this.drawPixel(counter % 16, Math.floor(counter / 16), new RGB(255,0,0));
-        counter++;
+    this.width = function() {
+        return this.buffer[0].length;
     }
 
     this.oneFrame = function() {
-        this.pulsingPixels();
-        this.drawToFadeCandy();
-        this.drawToConsole();
+        animation.update(this);
+        // this.pushToFadeCandy();
+        this.pushToConsole();
+
+        var millisToNextFrame = (1000 / FRAME_RATE) - (Date.now() % (1000 / FRAME_RATE));
+        setTimeout(this.oneFrame.bind(this), millisToNextFrame);
     };
+
+    var animation = new PulsingPixels();
+    animation.initialize(this);
 
     // fire it up
     for(var x = 0; x < this.buffer.length; x++) {
         process.stdout.write('\n');
     }
-    setInterval(this.oneFrame.bind(this), 100);
+    this.oneFrame();
 }
 
-var canvas = Canvas();
+var canvas = new Canvas();
+
+function PulsingPixels() {
+    this.TTL = 5;
+    this.pixels = [];
+
+    this.initialize = function(canvas) {
+
+    }
+
+    this.update = function(canvas) {
+        if(this.pixels.length < 20) {
+            this.pixels.push({
+                ttl: this.TTL,
+                h: Math.random(),
+                s: 1,
+                v: 0,
+                x: Math.floor(Math.random() * 16),
+                y: Math.floor(Math.random() * 6)
+            });
+            this.pixels.push({
+                ttl: this.TTL,
+                h: Math.random(),
+                s: 1,
+                v: 0,
+                x: Math.floor(Math.random() * 16),
+                y: Math.floor(Math.random() * 6)
+            });
+        }
+
+        canvas.fillBuffer(new RGB(0,0,0));
+
+        for(var i = 0; i < this.pixels.length; i++) {
+            var p = this.pixels[i];
+            canvas.drawPixel(p.x, p.y, hsvToRgb(p.h, p.s, p.v));
+            p.ttl--;
+            p.v += 1.0 / this.TTL;
+            if(p.ttl <= 0) {
+                this.pixels.splice(i, 1);
+                i--;
+            }
+        }
+    }
+}
+
+function RotatingRainbow() {
+    this.counter = 0;
+
+    this.initialize = function(canvas) {
+
+    }
+
+    this.update = function(canvas) {
+        for(var y = 0; y < canvas.height(); y++) {
+            for(var x = 0; x < canvas.width(); x++) {
+                var hue = ((y + x) / 16) + (this.counter / 16);
+                canvas.drawPixel(x, y, hsvToRgb(hue, 1, 1));
+            }
+        }
+        this.counter++;
+    }
+}
+
+function ScrollingText(text) {
+    this.counter = 16;  // to put the text off screen initially
+    this.text = text;
+
+    this.initialize = function(canvas) {
+        canvas.fillBuffer(new RGB(0,0,0));
+    }
+
+    this.update = function(canvas) {
+        canvas.fillBuffer(new RGB(0,0,0));
+        canvas.drawString(this.text, this.counter, 0, new RGB(255, 0, 0));
+        this.counter--;
+        if(this.counter < (this.text.length * -6)) {
+            this.counter = 16;
+        }
+    }
+}
+
+function GrowingLine() {
+    this.counter = 0;
+
+    this.initialize = function(canvas) {
+        canvas.fillBuffer(new RGB(0,0,0));
+    }
+
+    this.update = function(canvas) {
+        if(this.counter >= (canvas.height() * canvas.width())) {
+            canvas.fillBuffer(new RGB(0,0,0));
+            this.counter = 0;
+        }
+        canvas.drawPixel(this.counter % 16, Math.floor(this.counter / 16), new RGB(0,0,255));
+        this.counter++;
+    }
+}
+
+function RacingDot() {
+    this.counter = 0;
+
+    this.initialize = function(canvas) {
+        canvas.fillBuffer(new RGB(0,0,0));
+    }
+
+    this.update = function(canvas) {
+        canvas.fillBuffer(new RGB(0,0,0));
+        canvas.drawPixel(this.counter % 16, Math.floor(this.counter / 16), new RGB(255,0,0));
+        this.counter++;
+    }
+}
+
+function Equalizer() {
+    this.counter = 0;
+    this.bars = [];
+    this.hue = 240 / 360;
+
+    this.initialize = function(canvas) {
+        this.hue += 20 / 360;
+        this.counter = 0;
+        this.bars = [];
+        for(var i = 0; i < canvas.width(); i++) {
+            this.bars.push({
+                max: Math.floor((Math.random() * canvas.height()) + 1),
+                h: this.hue
+            });
+        }
+        canvas.fillBuffer(new RGB(0,0,0));
+    };
+
+    this.update = function(canvas) {
+        if(this.counter > 5) {
+            this.initialize(canvas);
+        }
+
+        this.counter++;
+        for(var x = 0; x < canvas.width(); x++) {
+            var bar = this.bars[x];
+            var bar_height = Math.floor((this.counter / 5) * bar.max);
+            for(var y = 0; y < bar_height; y++) {
+                canvas.drawPixel(x, canvas.height() - y, hsvToRgb(bar.h, 1, y / canvas.height()));
+            }
+        }
+    }
+}
