@@ -67,7 +67,7 @@ function Canvas() {
     this.drawToFadeCandy = function() {
         for(var y = 0; y < this.buffer.length; y++) {
             for(var x = 0; x < this.buffer[y].length; x++) {
-                client.setPixel((y * buffer.length) + x, this.buffer[y][x].g, this.buffer[y][x].r, this.buffer[y][x].b);
+                client.setPixel((y * this.buffer[y].length) + x, this.buffer[y][x].g, this.buffer[y][x].r, this.buffer[y][x].b);
             }
         }
         client.writePixels();
@@ -180,7 +180,7 @@ function Canvas() {
     }
 
     this.oneFrame = function() {
-        this.racingDot();
+        this.pulsingPixels();
         this.drawToFadeCandy();
         this.drawToConsole();
     };
