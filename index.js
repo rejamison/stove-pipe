@@ -126,7 +126,7 @@ function Canvas() {
         setTimeout(this.oneFrame.bind(this), millisToNextFrame);
     };
 
-    var animation = new PulsingPixels();
+    var animation = new Rain();
     animation.initialize(this);
 
     // fire it up
@@ -277,6 +277,41 @@ function Equalizer() {
             var bar_height = Math.floor((this.counter / 5) * bar.max);
             for(var y = 0; y < bar_height; y++) {
                 canvas.drawPixel(x, canvas.height() - y, hsvToRgb(bar.h, 1, y / canvas.height()));
+            }
+        }
+    }
+}
+
+function Rain() {
+    this.pixels = [];
+    this.hue = 0;
+
+    this.initialize = function(canvas) {
+
+    }
+
+    this.update = function(canvas) {
+        if(this.pixels.length < 16) {
+            var count = Math.floor(Math.random() * 3);
+            for(var i = 0; i < count; i++) {
+                this.pixels.push({
+                    h: this.hue,
+                    x: Math.floor(Math.random() * 16),
+                    y: 0
+                });
+                this.hue += .02;
+            }
+        }
+
+        canvas.fillBuffer(new RGB(0,0,0));
+
+        for(var i = 0; i < this.pixels.length; i++) {
+            var p = this.pixels[i];
+            canvas.drawPixel(p.x, p.y, hsvToRgb(p.h, 1, (p.y + 1) / canvas.height()));
+            p.y++;
+            if(p.y >= canvas.height()) {
+                this.pixels.splice(i, 1);
+                i--;
             }
         }
     }
