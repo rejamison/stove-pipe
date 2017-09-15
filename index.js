@@ -1,5 +1,6 @@
-process = require('process');
-chalk = require('chalk');
+var process = require('process');
+var chalk = require('chalk');
+var OPC = require('./opc');
 
 var font = [
     "  X   XXXX   XXXX XXX   XXXXX XXXXX  XXX  X   X  XXX      X X  X  X     X   X X   X  XXX  XXXX   XXX  XXXX   XXX  XXXXX X   X X   X X   X X   X X   X XXXXX ",
@@ -9,6 +10,8 @@ var font = [
     "X   X X   X X     X  X  X     X     X   X X   X   X   X   X X  X  X     X   X X   X X   X X     X  XX X  X     XX   X   X   X   X   XX XX  X X    X    X    ",
     "X   X XXXX   XXXX XXX   XXXXX X      XXX  X   X  XXX   XXX  X   X XXXXX X   X X   X  XXX  X      XXXX X   X  XXX    X    XXX    X    X X  X   X   X   XXXXX "
 ];
+
+var client = new OPC('stove-pipe.local', 7890);
 
 function hsvToRgb(h, s, v) {
     var r, g, b, i, f, p, q, t;
@@ -52,14 +55,23 @@ function Canvas() {
         var rowCount = this.buffer.length;
 
         out.moveCursor(0,-rowCount);
-        for(var x = 0; x < rowCount; x++) {
+        for(var y = 0; y < rowCount; y++) {
             out.clearLine();
-            for(var y = 0; y < this.buffer[x].length; y++) {
-                out.write(chalk.bgRgb(this.buffer[x][y].r, this.buffer[x][y].g, this.buffer[x][y].b)('  '));
+            for(var x = 0; x < this.buffer[y].length; x++) {
+                out.write(chalk.bgRgb(this.buffer[y][x].r, this.buffer[y][x].g, this.buffer[y][x].b)('  '));
             }
             out.write('\n');
         }
     };
+
+    this.drawToFadeCandy = function() {
+        for(var y = 0; y < this.buffer.length; y++) {
+            for(var x = 0; x < this.buffer[y].length; x++) {
+                client.setPixel((y * buffer.length) + x, this.buffer[y][x].g, this.buffer[y][x].r, this.buffer[y][x].b);
+            }
+        }
+        client.writePixels();
+    }
 
     this.fillBuffer = function(color) {
         for(var x = 0; x < this.buffer.length; x++) {
@@ -137,7 +149,7 @@ function Canvas() {
         for(var y = 0; y < this.buffer.length; y++) {
             for(var x = 0; x < this.buffer[y].length; x++) {
                 var hue = ((y + x) / 16) + (counter / 16);
-                this.buffer[y][x] = this.hsvToRgb(hue, 1, 1);
+                this.buffer[y][x] = hsvToRgb(hue, 1, 1);
             }
         }
         counter++;
@@ -154,8 +166,22 @@ function Canvas() {
         }
     }
 
+    var counter = 0;
+    this.growingLine = function() {
+        this.drawPixel(counter % 16, Math.floor(counter / 16), new RGB(0,0,255));
+        counter++;
+    }
+
+    var counter = 0;
+    this.racingDot = function() {
+        this.fillBuffer(new RGB(0,0,0));
+        this.drawPixel(counter % 16, Math.floor(counter / 16), new RGB(255,0,0));
+        counter++;
+    }
+
     this.oneFrame = function() {
-        this.scrollingText();
+        this.racingDot();
+        this.drawToFadeCandy();
         this.drawToConsole();
     };
 
