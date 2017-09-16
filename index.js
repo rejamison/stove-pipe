@@ -2,13 +2,13 @@ var process = require('process');
 var chalk = require('chalk');
 var OPC = require('./opc');
 
-var FRAME_RATE = 10;
+var FRAME_RATE = 15;
 var font = [
     "  X   XXXX   XXXX XXX   XXXXX XXXXX  XXX  X   X  XXX      X X  X  X     X   X X   X  XXX  XXXX   XXX  XXXX   XXX  XXXXX X   X X   X X   X X   X X   X XXXXX ",
     " X X  X   X X     X  X  X     X     X   X X   X   X       X X X   X     XX XX XX  X X   X X   X X   X X   X XX      X   X   X X   X X   X  X X   X X     X  ",
     "XXXXX XXXX  X     X   X XXX   XXX   X     XXXXX   X       X XX    X     X X X X X X X   X XXXX  X   X XXXX   XX     X   X   X  X X  X X X   X     X     X   ",
-    "X   X X   X X     X  X  X     X     X  XX X   X   X   X   X X  X  X     X   X X   X X   X X     X  XX X  X     XX   X   X   X   X   XX XX  X X    X    X    ",
-    "X   X XXXX   XXXX XXX   XXXXX X      XXX  X   X  XXX   XXX  X   X XXXXX X   X X   X  XXX  X      XXXX X   X  XXX    X    XXX    X    X X  X   X   X   XXXXX "
+    "X   X X   X X     X  X  X     X     X  XX X   X   X   X   X X X   X     X   X X  XX X   X X     X  XX X  X     XX   X   X   X   X   XX XX  X X    X    X    ",
+    "X   X XXXX   XXXX XXX   XXXXX X      XXX  X   X  XXX   XXX  X  X  XXXXX X   X X   X  XXX  X      XXXX X   X  XXX    X    XXX    X    X X  X   X   X   XXXXX "
 ];
 
 var client = new OPC('stove-pipe.local', 7890);
@@ -98,7 +98,7 @@ function Canvas() {
     };
 
     this.drawPixel = function(x, y, color) {
-        if(y >= 0 && y < this.buffer.length && x >= 0 && x < this.buffer[y].length) {
+        if(y >= 0 && y < this.height && x >= 0 && x < this.width) {
             this.buffer[y][x] = color;
         }
     }
@@ -125,10 +125,12 @@ function Canvas() {
     };
 
     this.oneFrame = function() {
-        if((this.frameCounter % 20) === 0) {
-            switch(Math.floor(this.frameCounter / 20)) {
+        if((this.frameCounter % 200) === 0) {
+            //var dice = Math.floor(Math.random() * 8);
+            var dice = 8;
+            switch(dice) {
                 case 0:
-                    this.animation = new Rain();
+                    this.animation = new Collider();
                     break;
                 case 1:
                     this.animation = new PulsingPixels();
@@ -147,9 +149,12 @@ function Canvas() {
                     break;
                 case 6:
                     this.animation = new ScrollingText('MAKING');
-                default:
+                    break;
+                case 7:
                     this.animation = new Rain();
-                    this.frameCounter = 0;
+                    break;
+                case 8:
+                    this.animation = new Fireworks();
                     break;
             }
             this.animation.initialize(this);
@@ -298,14 +303,14 @@ function Equalizer() {
     };
 
     this.update = function(canvas) {
-        if(this.counter > 5) {
+        if(this.counter > 8) {
             this.initialize(canvas);
         }
 
         this.counter++;
         for(var x = 0; x < canvas.width; x++) {
             var bar = this.bars[x];
-            var bar_height = Math.floor((this.counter / 5) * bar.max);
+            var bar_height = Math.floor((this.counter / 8) * bar.max);
             for(var y = 0; y < bar_height; y++) {
                 canvas.drawPixel(x, canvas.height - y, hsvToRgb(bar.h, 1, y / canvas.height));
             }
@@ -347,3 +352,124 @@ function Rain() {
         }
     }
 }
+
+function Collider() {
+    this.partA;
+    this.partB;
+    this.sparks = [];
+
+    this.initialize = function(canvas) {
+        this.partA = {
+            x: 0,
+            y: 0,
+            h: Math.random()
+        };
+        this.partB = {
+            x: canvas.width - 1,
+            y: canvas.height - 1,
+            h: Math.random()
+        }
+    }
+
+    this.update = function(canvas) {
+        canvas.fillBuffer(new RGB(0,0,0));
+        canvas.drawPixel(this.partA.x, this.partA.y, hsvToRgb(this.partA.h, 0, 1));
+        canvas.drawPixel(this.partB.x, this.partB.y, hsvToRgb(this.partB.h, 0, 1));
+
+        for(var i = 0; i < this.sparks.length; i++) {
+            var spark = this.sparks[i];
+            canvas.drawPixel(Math.round(spark.x), Math.round(spark.y), hsvToRgb(spark.h, 1, spark.ttl / 7));
+        }
+
+        if((this.partA.y === this.partB.y) && (Math.abs(this.partA.x - this.partB.x) <= 1)) {
+            this.initialize(canvas);
+
+            var hue = Math.random();
+            for(var i = 0; i < 10; i++) {
+                var sparkHue = hue + (Math.random() * .05) - .025;
+                this.sparks.push({
+                    x: (canvas.width / 2) + Math.floor(Math.random() * 3) - 1,
+                    y: (canvas.height / 2) + Math.floor(Math.random() * 3) - 1,
+                    h: sparkHue,
+                    deltaX: (Math.random() * 2) - 1,
+                    deltaY: (Math.random() * 2) - 1,
+                    ttl: 7
+                });
+            }
+        } else {
+            this.partA.x++;
+            if(this.partA.x >= canvas.width) {
+                this.partA.x = 0;
+                this.partA.y++;
+            }
+            this.partB.x--;
+            if(this.partB.x < 0) {
+                this.partB.x = canvas.width - 1;
+                this.partB.y--;
+            }
+            for(var i = 0; i < this.sparks.length; i++) {
+                var spark = this.sparks[i];
+                spark.x += spark.deltaX;
+                spark.y += spark.deltaY;
+                spark.ttl--;
+
+                if(spark.ttl <= 0) {
+                    this.sparks.splice(i, 1);
+                    i--;
+                }
+            }
+        }
+    }
+}
+
+function Fireworks() {
+    this.sparks = [];
+
+    this.initialize = function(canvas) {
+
+    }
+
+    this.update = function(canvas) {
+        if(this.sparks.length < 5) {
+            var hue = Math.random();
+            var x = Math.floor(Math.random() * 14) + 1;
+            for(var i = 0; i < 10; i++) {
+                var life = 8 + Math.floor(Math.random() * 5) - 1;
+                var sparkHue = hue + (Math.random() * .05) - .025;
+                if(sparkHue >= 1) {
+                    sparkHue -= 1;
+                }
+                this.sparks.push({
+                    x: x,
+                    y: (canvas.height / 2) - 1,
+                    h: sparkHue,
+                    deltaX: (Math.random() * 3) - 1,
+                    deltaY: (Math.random() * 3) - 1,
+                    life: life,
+                    ttl: life
+                });
+            }
+        }
+        canvas.fillBuffer(new RGB(0,0,0));
+
+        for(var i = 0; i < this.sparks.length; i++) {
+            var spark = this.sparks[i];
+            canvas.drawPixel(Math.round(spark.x), Math.round(spark.y), hsvToRgb(spark.h, 1, spark.ttl / spark.life));
+        }
+
+        var hue = Math.random();
+        for(var i = 0; i < this.sparks.length; i++) {
+            var spark = this.sparks[i];
+            spark.x += spark.deltaX;
+            spark.y += spark.deltaY;
+            spark.deltaY += .25;
+            spark.ttl--;
+
+            if(spark.ttl <= 0) {
+                this.sparks.splice(i, 1);
+                i--;
+            }
+        }
+    }
+}
+
