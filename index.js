@@ -247,6 +247,7 @@ function Random() {
         }
 
         this.currentAnimation.update(canvas);
+        this.frameCounter++;
     }
 }
 
