@@ -1,6 +1,8 @@
 var process = require('process');
 var chalk = require('chalk');
 var OPC = require('./opc');
+var bleno = require('bleno');
+var StovePipeCharacteristic = require('./characteristic');
 
 var FRAME_RATE = 15;
 var font = [
@@ -42,23 +44,73 @@ function RGB(r, g, b) {
 
 function Canvas() {
     this.buffer = [
-        [new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255)],
-        [new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255)],
-        [new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255)],
-        [new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255)],
-        [new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255)],
+        [new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255)],
+        [new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255)],
+        [new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255)],
+        [new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255)],
+        [new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255)],
     ];
 
     this.animation = new Rain();
     this.frameCounter = 0;
     this.height = this.buffer.length;
     this.width = this.buffer[0].length;
+    this.shouldConsole = false;
+    this.shouldFadeCandy = false;
+    this.animations = [];
 
-    this.initialize = function() {
-        // spit out some newlines for rendering to the console
-        for(var x = 0; x < this.height; x++) {
-            process.stdout.write('\n');
+    this.initialize = function(renderToConsole, renderToFadeCandy) {
+        console.log('Width: ' + this.width);
+        console.log('Height: ' + this.height);
+        this.shouldConsole = renderToConsole ? true : false;
+        this.shouldFadeCandy = renderToFadeCandy ? true : false;
+
+        bleno.on('stateChange', function(state) {
+            console.log('on -> stateChange: ' + state);
+
+            if (state === 'poweredOn') {
+                bleno.startAdvertising('stove-pipe', ['ec00']);
+            } else {
+                bleno.stopAdvertising();
+            }
+        });
+
+        var that = this;
+        bleno.on('advertisingStart', function(error) {
+            console.log('on -> advertisingStart: ' + (error ? 'error ' + error : 'success'));
+
+            if (!error) {
+                bleno.setServices([
+                    new bleno.PrimaryService({
+                        uuid: 'ec00',
+                        characteristics: [
+                            new StovePipeCharacteristic(that)
+                        ]
+                    })
+                ]);
+            }
+        });
+
+        if(this.shouldConsole) {
+            // spit out some newlines for rendering to the console
+            for(var x = 0; x < this.height; x++) {
+                process.stdout.write('\n');
+            }
         }
+
+        this.animations.push(new Collider());
+        this.animations.push(new PulsingPixels());
+        this.animations.push(new RotatingRainbow());
+        this.animations.push(new Equalizer());
+        //this.animations.push(new GrowingLine());
+        //this.animations.push(new RacingDot());
+        //this.animations.push(new RacingLine());
+        this.animations.push(new ScrollingText('MAKER FAIRE', new RGB(255,0,0)));
+        this.animations.push(new ScrollingText('PENELOPE RULES', new RGB(0,0,255)));
+        this.animations.push(new Rain());
+        this.animations.push(new Fireworks());
+
+        this.animation = this.animations[Math.floor(Math.random() * this.animations.length)];
         this.animation.initialize(this);
     }
 
@@ -68,12 +120,12 @@ function Canvas() {
 
     this.pushToConsole = function() {
         var out = process.stdout;
-        var rowCount = this.buffer.length;
+        var rowCount = this.height;
 
         out.moveCursor(0,-rowCount);
-        for(var y = 0; y < rowCount; y++) {
+        for(var y = 0; y < this.height; y++) {
             out.clearLine();
-            for(var x = 0; x < this.buffer[y].length; x++) {
+            for(var x = 0; x < this.width; x++) {
                 out.write(chalk.bgRgb(this.buffer[y][x].r, this.buffer[y][x].g, this.buffer[y][x].b)('  '));
             }
             out.write('\n');
@@ -81,11 +133,13 @@ function Canvas() {
     };
 
     this.pushToFadeCandy = function() {
-        for(var y = 0; y < this.buffer.length; y++) {
-            for(var x = 0; x < this.buffer[y].length; x++) {
-                client.setPixel((y * this.buffer[y].length) + x, this.buffer[y][x].g, this.buffer[y][x].r, this.buffer[y][x].b);
+        for(var y = 0; y < this.height; y++) {
+            for(var x = 0; x < this.width; x++) {
+                client.setPixel((y * this.width) + x, this.buffer[y][x].g, this.buffer[y][x].r, this.buffer[y][x].b);
+//                console.log('ledAddress=' + ((y * this.width) + x) + ',x=' + x, ',y=' + y);
             }
         }
+//        console.log('\n\n\n\n\n')
         client.writePixels();
     }
 
@@ -125,44 +179,18 @@ function Canvas() {
     };
 
     this.oneFrame = function() {
-        if((this.frameCounter % 200) === 0) {
-            //var dice = Math.floor(Math.random() * 8);
-            var dice = 8;
-            switch(dice) {
-                case 0:
-                    this.animation = new Collider();
-                    break;
-                case 1:
-                    this.animation = new PulsingPixels();
-                    break;
-                case 2:
-                    this.animation = new RotatingRainbow();
-                    break;
-                case 3:
-                    this.animation = new Equalizer();
-                    break;
-                case 4:
-                    this.animation = new GrowingLine();
-                    break;
-                case 5:
-                    this.animation = new RacingDot();
-                    break;
-                case 6:
-                    this.animation = new ScrollingText('MAKING');
-                    break;
-                case 7:
-                    this.animation = new Rain();
-                    break;
-                case 8:
-                    this.animation = new Fireworks();
-                    break;
-            }
+        if((this.frameCounter % 150) === 0) {
+            this.animation = this.animations[Math.floor(Math.random() * this.animations.length)]
             this.animation.initialize(this);
         }
 
         this.animation.update(this);
-        // this.pushToFadeCandy();
-        this.pushToConsole();
+        if(this.shouldFadeCandy) {
+            this.pushToFadeCandy();
+        }
+        if(this.shouldConsole) {
+            this.pushToConsole();
+        }
 
         var millisToNextFrame = (1000 / FRAME_RATE) - (Date.now() % (1000 / FRAME_RATE));
         setTimeout(this.oneFrame.bind(this), millisToNextFrame);
@@ -171,7 +199,20 @@ function Canvas() {
 }
 
 var canvas = new Canvas();
-canvas.initialize();
+if(process.argv[2]) {
+    if(process.argv[2] === 'FadeCandy') {
+        canvas.initialize(false, true);
+    } else if(process.argv[2] === 'Console') {
+        canvas.initialize(true, false);
+    } else if(process.argv[2] === 'Both') {
+        canvas.initialize(true, true);
+    } else {
+        console.log("ERROR: Unrecognized param: " + process.argv[2]);
+    }
+} else {
+    // default to showing just on fade candy
+    canvas.initialize(false, true);
+}
 canvas.run();
 
 function PulsingPixels() {
@@ -235,17 +276,21 @@ function RotatingRainbow() {
     }
 }
 
-function ScrollingText(text) {
+function ScrollingText(text, color) {
     this.counter = 16;  // to put the text off screen initially
     this.text = text;
+    this.color = color;
 
     this.initialize = function(canvas) {
         canvas.fillBuffer(new RGB(0,0,0));
+        if(!this.color) {
+            this.color = new RGB(255,255,255);
+        }
     }
 
     this.update = function(canvas) {
         canvas.fillBuffer(new RGB(0,0,0));
-        canvas.drawString(this.text, this.counter, 0, new RGB(255, 0, 0));
+        canvas.drawString(this.text, this.counter, 0, this.color);
         this.counter--;
         if(this.counter < (this.text.length * -6)) {
             this.counter = 16;
@@ -265,7 +310,7 @@ function GrowingLine() {
             canvas.fillBuffer(new RGB(0,0,0));
             this.counter = 0;
         }
-        canvas.drawPixel(this.counter % 16, Math.floor(this.counter / 16), new RGB(0,0,255));
+        canvas.drawPixel(this.counter % canvas.width, Math.floor(this.counter / canvas.width), new RGB(0,0,255));
         this.counter++;
     }
 }
@@ -279,8 +324,30 @@ function RacingDot() {
 
     this.update = function(canvas) {
         canvas.fillBuffer(new RGB(0,0,0));
-        canvas.drawPixel(this.counter % 16, Math.floor(this.counter / 16), new RGB(255,0,0));
+        canvas.drawPixel(this.counter % canvas.width, Math.floor(this.counter / canvas.width), new RGB(255,0,0));
         this.counter++;
+        if(this.counter >= (canvas.height * canvas.width)) {
+            this.counter = 0;
+        }
+    }
+}
+
+function RacingLine() {
+    this.counter = 0;
+
+    this.initialize = function(canvas) {
+        canvas.fillBuffer(new RGB(0,0,0));
+    }
+
+    this.update = function(canvas) {
+        canvas.fillBuffer(new RGB(0,0,0));
+        for(var y = 0; y < canvas.height; y++) {
+            canvas.drawPixel(this.counter % canvas.width, y, new RGB(255,0,0));
+        }
+        this.counter++;
+        if(this.counter >= canvas.width) {
+            this.counter = 0;
+        }
     }
 }
 
@@ -288,6 +355,8 @@ function Equalizer() {
     this.counter = 0;
     this.bars = [];
     this.hue = 240 / 360;
+    this.CYCLE_TIME = 6;
+    this.direction = 1;
 
     this.initialize = function(canvas) {
         this.hue += 20 / 360;
@@ -299,21 +368,24 @@ function Equalizer() {
                 h: this.hue
             });
         }
-        canvas.fillBuffer(new RGB(0,0,0));
     };
 
     this.update = function(canvas) {
-        if(this.counter > 8) {
-            this.initialize(canvas);
-        }
-
-        this.counter++;
+        canvas.fillBuffer(new RGB(0,0,0));
         for(var x = 0; x < canvas.width; x++) {
             var bar = this.bars[x];
-            var bar_height = Math.floor((this.counter / 8) * bar.max);
+            var bar_height = Math.floor(((this.counter + 1) / this.CYCLE_TIME) * bar.max);
             for(var y = 0; y < bar_height; y++) {
                 canvas.drawPixel(x, canvas.height - y, hsvToRgb(bar.h, 1, y / canvas.height));
             }
+        }
+
+        this.counter += this.direction;
+        if(this.counter > this.CYCLE_TIME) {
+            this.direction = -1;
+        } else if(this.counter < 0) {
+            this.initialize(canvas);
+            this.direction = 1;
         }
     }
 }
