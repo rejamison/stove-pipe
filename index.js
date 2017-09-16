@@ -51,8 +51,7 @@ function Canvas() {
         [new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255),new RGB(255,255,255)],
     ];
 
-    this.animation = new Rain();
-    this.frameCounter = 0;
+    this.animationIndex = 0;
     this.height = this.buffer.length;
     this.width = this.buffer[0].length;
     this.shouldConsole = false;
@@ -98,21 +97,30 @@ function Canvas() {
             }
         }
 
+        this.animations.push(new Random());
         this.animations.push(new Collider());
         this.animations.push(new PulsingPixels());
         this.animations.push(new RotatingRainbow());
         this.animations.push(new Equalizer());
-        //this.animations.push(new GrowingLine());
-        //this.animations.push(new RacingDot());
-        //this.animations.push(new RacingLine());
+        this.animations.push(new GrowingLine());
+        this.animations.push(new RacingDot());
+        this.animations.push(new RacingLine());
         this.animations.push(new ScrollingText('MAKER FAIRE', new RGB(255,0,0)));
         this.animations.push(new ScrollingText('PENELOPE RULES', new RGB(0,0,255)));
         this.animations.push(new Rain());
         this.animations.push(new Fireworks());
 
-        this.animation = this.animations[Math.floor(Math.random() * this.animations.length)];
-        this.animation.initialize(this);
+        this.animations[this.animationIndex].initialize(this);
     }
+
+    this.switchToAnimation = function(index) {
+        if(index >= 0 && index < this.animations.length) {
+            this.animationIndex = index;
+            this.animations[this.animationIndex].initialize(this);
+        } else {
+            // do nothing
+        }
+    };
 
     this.run = function() {
         this.oneFrame();
@@ -179,12 +187,10 @@ function Canvas() {
     };
 
     this.oneFrame = function() {
-        if((this.frameCounter % 150) === 0) {
-            this.animation = this.animations[Math.floor(Math.random() * this.animations.length)]
-            this.animation.initialize(this);
-        }
+        // update the animation
+        this.animations[this.animationIndex].update(this);
 
-        this.animation.update(this);
+        // draw the pixels
         if(this.shouldFadeCandy) {
             this.pushToFadeCandy();
         }
@@ -194,7 +200,6 @@ function Canvas() {
 
         var millisToNextFrame = (1000 / FRAME_RATE) - (Date.now() % (1000 / FRAME_RATE));
         setTimeout(this.oneFrame.bind(this), millisToNextFrame);
-        this.frameCounter += 1;
     };
 }
 
@@ -214,6 +219,36 @@ if(process.argv[2]) {
     canvas.initialize(false, true);
 }
 canvas.run();
+
+function Random() {
+    this.FRAME_LIMIT = 150;
+    this.currentAnimation;
+    this.animations = [];
+    this.frameCounter = 0;
+
+    this.initialize = function(canvas) {
+        this.animations.push(new Collider());
+        this.animations.push(new PulsingPixels());
+        this.animations.push(new RotatingRainbow());
+        this.animations.push(new Equalizer());
+        //this.animations.push(new GrowingLine());
+        //this.animations.push(new RacingDot());
+        //this.animations.push(new RacingLine());
+        this.animations.push(new ScrollingText('MAKER FAIRE', new RGB(255,0,0)));
+        this.animations.push(new ScrollingText('PENELOPE RULES', new RGB(0,0,255)));
+        this.animations.push(new Rain());
+        this.animations.push(new Fireworks());
+    }
+
+    this.update = function(canvas) {
+        if((this.frameCounter % this.FRAME_LIMIT) === 0) {
+            this.currentAnimation = this.animations[Math.floor(Math.random() * this.animations.length)]
+            this.currentAnimation.initialize(canvas);
+        }
+
+        this.currentAnimation.update(canvas);
+    }
+}
 
 function PulsingPixels() {
     this.TTL = 5;

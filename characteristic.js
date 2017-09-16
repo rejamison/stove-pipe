@@ -17,20 +17,20 @@ var StovePipeCharacteristic = function(canvas) {
 util.inherits(StovePipeCharacteristic, BlenoCharacteristic);
 
 StovePipeCharacteristic.prototype.onReadRequest = function (offset, callback) {
-    console.log('EchoCharacteristic - onReadRequest: value = ' + this.canvas.animations.length);
+    console.log('EchoCharacteristic - onReadRequest: value = ' + this.canvas.animationIndex);
 
-    callback(this.RESULT_SUCCESS, new Buffer([this.canvas.animations.length]));
+    callback(this.RESULT_SUCCESS, new Buffer([this.canvas.animationIndex]));
 };
 
 StovePipeCharacteristic.prototype.onWriteRequest = function (data, offset, withoutResponse, callback) {
-    this._value = data;
+    console.log('EchoCharacteristic - onWriteRequest: value = ' + this.canvas.animationIndex);
 
-    console.log('EchoCharacteristic - onWriteRequest: value = ' + this.canvas.animations.length);
+    this.canvas.switchToAnimation(data[0]);
 
     if (this._updateValueCallback) {
         console.log('EchoCharacteristic - onWriteRequest: notifying');
 
-        this._updateValueCallback(this._value);
+        this._updateValueCallback(new Buffer([this.canvas.animationIndex]));
     }
 
     callback(this.RESULT_SUCCESS);
