@@ -21,8 +21,8 @@ echo("Amps Needed", led_per_stack * led_per_layer * .06);
 //ring_even_half_right();
 //ring_odd_half_left();
 //ring_odd_half_right();
-top_half_left();
-top_half_right();
+//top_half_left();
+//top_half_right();
 //bottom_half_left();
 //bottom_half_right();
 
@@ -114,7 +114,7 @@ module ring_even_half_left() {
     }
     rotate([0,0,0]) translate([0,0,0]) difference() {  
         translate([-wall_depth*1.5,-inner_radius+height/3+wall_depth,height]) prism(wall_depth*1.5,-height/3,-3*height/4);
-        rotate([0,90,0]) translate([-7*height/8,-inner_radius+height/8+wall_depth,-1]) cylinder(d=3,h=wall_depth*2+2);
+        rotate([0,90,0]) translate([-7*height/8,-inner_radius+height/8+wall_depth,-4]) cylinder(d=3,h=wall_depth*2+2);
     }
 }
 
