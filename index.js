@@ -4,7 +4,7 @@ var OPC = require('./opc');
 var bleno = require('bleno');
 var StovePipeCharacteristic = require('./characteristic');
 
-var FRAME_RATE = 10;
+var FRAME_RATE = 12;
 var font = [
     "  X   XXXX   XXXX XXX   XXXXX XXXXX  XXX  X   X  XXX      X X  X  X     X   X X   X  XXX  XXXX   XXX  XXXX   XXX  XXXXX X   X X   X X   X X   X X   X XXXXX ",
     " X X  X   X X     X  X  X     X     X   X X   X   X       X X X   X     XX XX XX  X X   X X   X X   X X   X XX      X   X   X X   X X   X  X X   X X     X  ",
@@ -148,7 +148,7 @@ function Canvas() {
     };
 
     this.pushToFadeCandy = function() {
-        var xOffset = 5;  // rotate the x axis around to a specific position (i.e., back of the hat)
+        var xOffset = -5;  // rotate the x axis around to a specific position (i.e., back of the hat)
         for(var y = 0; y < this.height; y++) {
             for(var x = 0; x < this.width; x++) {
                 var xTrans = x + xOffset;

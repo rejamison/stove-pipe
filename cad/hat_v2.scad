@@ -43,23 +43,6 @@ module bottom_half_left() {
     }
 }
 
-module alt_bottom_half_left() {
-    difference() {
-        union() {
-            cylinder(r=inner_radius+led_cell_depth,h=pitch*1.5);
-            translate([0,-(inner_radius+led_cell_depth),0]) cube([(pitch/2)+wall_depth, (inner_radius+led_cell_depth) * 2, pitch*1.5]);
-        }
-        translate([0,0,wall_depth-.01]) cylinder(r=inner_radius-wall_depth+led_cell_depth ,h=pitch*1.5+.02);
-        translate([0,0,-.01]) cylinder(r=inner_radius-wall_depth*6+led_cell_depth,h=pitch+.02);
-        translate([(pitch/2)+wall_depth,-(inner_radius+led_cell_depth),-1]) cube([500, (inner_radius+led_cell_depth) * 2, pitch*1.5+2]);
-        translate([0,-(inner_radius+led_cell_depth-wall_depth),wall_depth]) cube([100, (inner_radius+led_cell_depth-wall_depth) * 2, pitch*1.5+2]);
-        translate([0,-(inner_radius+led_cell_depth-wall_depth*6),-1]) cube([100, (inner_radius+led_cell_depth-wall_depth*6) * 2, pitch*1.5+2]);
-    }
-    // tabs
-    translate([pitch/2-wall_depth*.5,(inner_radius+led_cell_depth-wall_depth*6),wall_depth]) rotated_prism(wall_depth*1.5,wall_depth*5,height,0,0,0);
-    translate([pitch/2-wall_depth*.5,-(inner_radius+led_cell_depth-wall_depth),wall_depth]) rotated_prism(wall_depth*1.5,wall_depth*5,height,0,0,180);
-}
-
 module bottom_half_right() {
     difference() {
         translate([pitch+wall_depth*2,0,0]) rotate([0,0,180]) bottom_half_left();
@@ -70,18 +53,18 @@ module bottom_half_right() {
 module alt_bottom_half_left() {
     difference() {
         union() {
-            cylinder(r=inner_radius+led_cell_depth,h=pitch*1.5);
-            translate([0,-(inner_radius+led_cell_depth),0]) cube([(pitch/2)+wall_depth, (inner_radius+led_cell_depth) * 2, pitch*1.5]);
+            cylinder(r=inner_radius+led_cell_depth,h=pitch*2.5);
+            translate([0,-(inner_radius+led_cell_depth),0]) cube([(pitch/2)+wall_depth, (inner_radius+led_cell_depth) * 2, pitch*2.5]);
         }
-        translate([0,0,wall_depth-.01]) cylinder(r=inner_radius-wall_depth+led_cell_depth ,h=pitch*1.5+.02);
-        translate([0,0,-.01]) cylinder(r=inner_radius-wall_depth*6+led_cell_depth,h=pitch+.02);
-        translate([(pitch/2)+wall_depth,-(inner_radius+led_cell_depth),-1]) cube([500, (inner_radius+led_cell_depth) * 2, pitch*1.5+2]);
-        translate([0,-(inner_radius+led_cell_depth-wall_depth),wall_depth]) cube([100, (inner_radius+led_cell_depth-wall_depth) * 2, pitch*1.5+2]);
-        translate([0,-(inner_radius+led_cell_depth-wall_depth*6),-1]) cube([100, (inner_radius+led_cell_depth-wall_depth*6) * 2, pitch*1.5+2]);
+        translate([0,0,wall_depth-.01]) cylinder(r=inner_radius-wall_depth*2+led_cell_depth ,h=pitch*2.5+.02);
+        translate([0,0,-.01]) cylinder(r=inner_radius-wall_depth*8+led_cell_depth,h=pitch+.02);
+        translate([(pitch/2)+wall_depth,-(inner_radius+led_cell_depth),-1]) cube([500, (inner_radius+led_cell_depth) * 2, pitch*2.5+2]);
+        translate([0,-(inner_radius+led_cell_depth-wall_depth*2),wall_depth]) cube([100, (inner_radius+led_cell_depth-wall_depth*2) * 2, pitch*2.5+2]);
+        translate([0,-(inner_radius+led_cell_depth-wall_depth*8),-1]) cube([100, (inner_radius+led_cell_depth-wall_depth*8) * 2, pitch*2.5+2]);
     }
     // tabs
-    translate([pitch/2-wall_depth*.5,(inner_radius+led_cell_depth-wall_depth*6),wall_depth]) rotated_prism(wall_depth*1.5,wall_depth*5,height,0,0,0);
-    translate([pitch/2-wall_depth*.5,-(inner_radius+led_cell_depth-wall_depth),wall_depth]) rotated_prism(wall_depth*1.5,wall_depth*5,height,0,0,180);
+    translate([pitch/2-wall_depth*.5,(inner_radius+led_cell_depth-wall_depth*8),wall_depth]) rotated_prism(wall_depth*1.5,wall_depth*6,height,0,0,0);
+    translate([pitch/2-wall_depth*.5,-(inner_radius+led_cell_depth-wall_depth*2),wall_depth]) rotated_prism(wall_depth*1.5,wall_depth*6,height,0,0,180);
 }
 
 module alt_bottom_half_right() {
@@ -94,12 +77,12 @@ module alt_bottom_half_right() {
 module top_half_left() {
     difference() {
         union() {
-            cylinder(r=inner_radius+led_cell_depth,h=wall_depth*2);
-            translate([0,-(inner_radius+led_cell_depth),0]) cube([pitch/2+wall_depth, (inner_radius+led_cell_depth) * 2, wall_depth*2]);
+            cylinder(r=inner_radius+led_cell_depth,h=wall_depth*1.5);
+            translate([0,-(inner_radius+led_cell_depth),0]) cube([pitch/2+wall_depth, (inner_radius+led_cell_depth) * 2, wall_depth*1.5]);
         }
-        translate([pitch/2+wall_depth,-(inner_radius+led_cell_depth),-1]) cube([500, (inner_radius+led_cell_depth) * 2, wall_depth*2+2]);
+        translate([pitch/2+wall_depth,-(inner_radius+led_cell_depth),-1]) cube([500, (inner_radius+led_cell_depth) * 2, wall_depth*1.5+2]);
         for(i = [0:1:led_per_layer - 1]) {
-            translate([0,0,wall_depth*2]) rotate([45,0,i * (360 / led_per_layer)]) translate([inner_radius+((led_cell_depth-wall_depth)/4)-.1,-(notch_height)/2-.1,-(notch_height)/2-.1]) cube([(led_cell_depth-wall_depth)/2+.2,notch_height+.2,notch_height+.2]);
+            translate([0,0,wall_depth*1.5]) rotate([45,0,i * (360 / led_per_layer)]) translate([inner_radius+((led_cell_depth-wall_depth)/4)-.1,-(notch_height)/2-.1,-(notch_height)/2-.1]) cube([(led_cell_depth-wall_depth)/2+.2,notch_height+.2,notch_height+.2]);
         }
     }
 }
@@ -109,7 +92,15 @@ module top_half_right() {
 }
 
 module mount_plate() {
-    translate([-60,-55,0]) cube([95,75,wall_depth*2]);
+    difference() {
+        translate([-60,-55,0]) cube([95,75,wall_depth*2]);
+        translate([-2,-8,-.1]) cube([32,12,50]);
+        translate([-2,-24,-.1]) cube([32,12,50]);
+        translate([-2,-40,-.1]) cube([32,12,50]);
+        translate([-55,-50,-.1]) cube([12,27,50]);
+        translate([-38,-50,-.1]) cube([12,27,50]);
+        translate([-21,-50,-.1]) cube([12,27,50]);
+    }
     translate([-10,5,wall_depth]) rotate([0,0,180]) fadecandy_mount();
     translate([30,-50,wall_depth]) rotate([0,0,90]) pi_zero_mount();
 }
