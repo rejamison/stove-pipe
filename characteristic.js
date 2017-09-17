@@ -23,14 +23,14 @@ StovePipeCharacteristic.prototype.onReadRequest = function (offset, callback) {
 };
 
 StovePipeCharacteristic.prototype.onWriteRequest = function (data, offset, withoutResponse, callback) {
-    console.log('EchoCharacteristic - onWriteRequest: value = ' + this.canvas.animationIndex);
+    console.log('EchoCharacteristic - onWriteRequest: value = ' + data[0]);
 
     this.canvas.switchToAnimation(data[0]);
 
     if (this._updateValueCallback) {
         console.log('EchoCharacteristic - onWriteRequest: notifying');
 
-        this._updateValueCallback(new Buffer([this.canvas.animationIndex]));
+        this._updateValueCallback(new Buffer([data[0]]));
     }
 
     callback(this.RESULT_SUCCESS);
