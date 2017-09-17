@@ -21,10 +21,11 @@ echo("Amps Needed", led_per_stack * led_per_layer * .06);
 //ring_even_half_right();
 //ring_odd_half_left();
 //ring_odd_half_right();
-//top_half_left();
+top_half_left();
 //top_half_right();
+//mount_plate();
 //alt_bottom_half_left();
-alt_bottom_half_right();
+//alt_bottom_half_right();
 //bottom_half_right();
 
 module bottom_half_left() {
@@ -105,6 +106,41 @@ module top_half_left() {
 
 module top_half_right() {
     translate([pitch+wall_depth*2,0,0]) rotate([0,0,180]) top_half_left();
+}
+
+module mount_plate() {
+    translate([-60,-55,0]) cube([95,75,wall_depth*2]);
+    translate([-10,5,wall_depth]) rotate([0,0,180]) fadecandy_mount();
+    translate([30,-50,wall_depth]) rotate([0,0,90]) pi_zero_mount();
+}
+
+module fadecandy_mount() {
+    difference() {
+        cube([41,23,10]);
+        translate([1,1,6]) cube([39,21,10]);
+        translate([-1,3,-1]) cube([43,17,12]);
+    }
+    translate([35,19.5,7.5]) rotated_prism(5, 3, 2, 90, 0 ,0);
+    translate([35,0.5,7.5]) rotated_prism(5, 3, 2, 90, 0, 180);
+}
+
+module pi_zero_mount() {
+    translate([0+3.5,0+3.5,0]) difference() {
+        cylinder(d=5,h=6);
+        translate([0,0,-.01]) cylinder(d=2.45,h=6+.02);
+    }
+    translate([58+3.5,0+3.5,0]) difference() {
+        cylinder(d=5,h=6);
+        translate([0,0,-.01]) cylinder(d=2.45,h=6+.02);
+    }
+    translate([0+3.5,23+3.5,0]) difference() {
+        cylinder(d=5,h=6);
+        translate([0,0,-.01]) cylinder(d=2.45,h=6+.02);
+    }
+    translate([58+3.5,23+3.5,0]) difference() {
+        cylinder(d=5,h=6);
+        translate([0,0,-.01]) cylinder(d=2.45,h=6+.02);
+    }
 }
 
 module ring_even_half_left() {
