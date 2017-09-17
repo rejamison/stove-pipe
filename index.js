@@ -4,7 +4,7 @@ var OPC = require('./opc');
 var bleno = require('bleno');
 var StovePipeCharacteristic = require('./characteristic');
 
-var FRAME_RATE = 15;
+var FRAME_RATE = 10;
 var font = [
     "  X   XXXX   XXXX XXX   XXXXX XXXXX  XXX  X   X  XXX      X X  X  X     X   X X   X  XXX  XXXX   XXX  XXXX   XXX  XXXXX X   X X   X X   X X   X X   X XXXXX ",
     " X X  X   X X     X  X  X     X     X   X X   X   X       X X X   X     XX XX XX  X X   X X   X X   X X   X XX      X   X   X X   X X   X  X X   X X     X  ",
@@ -12,7 +12,13 @@ var font = [
     "X   X X   X X     X  X  X     X     X  XX X   X   X   X   X X X   X     X   X X  XX X   X X     X  XX X  X     XX   X   X   X   X   XX XX  X X    X    X    ",
     "X   X XXXX   XXXX XXX   XXXXX X      XXX  X   X  XXX   XXX  X  X  XXXXX X   X X   X  XXX  X      XXXX X   X  XXX    X    XXX    X    X X  X   X   X   XXXXX "
 ];
-
+var pacman = [
+    "  XXX     XXXX  ",
+    " XXXXX   XXXX   ",
+    "XXXXXXX XXX     ",
+    " XXXXX   XXXX   ",
+    "  XXX     XXXX  "
+];
 var client = new OPC('stove-pipe.local', 7890);
 
 function hsvToRgb(h, s, v) {
@@ -97,21 +103,22 @@ function Canvas() {
             }
         }
 
-        this.animations.push(new Random());
-        this.animations.push(new Collider());
-        this.animations.push(new PulsingPixels());
-        this.animations.push(new RotatingRainbow());
-        this.animations.push(new Equalizer());
-        this.animations.push(new GrowingLine());
-        this.animations.push(new RacingDot());
-        this.animations.push(new RacingLine());
+        this.animations.push(new Random());             // 0    0x00
+        this.animations.push(new Collider());           // 1    0x01
+        this.animations.push(new PulsingPixels());      // 2    0x02
+        this.animations.push(new RotatingRainbow());    // 3    0x03
+        this.animations.push(new Equalizer());          // 4    0x04
+        this.animations.push(new GrowingLine());        // 5    0x05
+        this.animations.push(new RacingDot());          // 6    0x06
+        this.animations.push(new RacingLine());         // 7    0x07
         this.animations.push(new ScrollingText('MAKER FAIRE', new RGB(255,0,0)));
         this.animations.push(new ScrollingText('PENELOPE RULES', new RGB(0,0,255)));
-        this.animations.push(new Rain());
-        this.animations.push(new Fireworks());
+        this.animations.push(new Rain());               // 10   0x0A
+        this.animations.push(new Fireworks());          // 11   0x0B
+        this.animations.push(new Pacman());             // 12   0x0C
 
         this.animations[this.animationIndex].initialize(this);
-    }
+    };
 
     this.switchToAnimation = function(index) {
         if(index >= 0 && index < this.animations.length) {
@@ -124,7 +131,7 @@ function Canvas() {
 
     this.run = function() {
         this.oneFrame();
-    }
+    };
 
     this.pushToConsole = function() {
         var out = process.stdout;
@@ -141,15 +148,20 @@ function Canvas() {
     };
 
     this.pushToFadeCandy = function() {
+        var xOffset = 5;  // rotate the x axis around to a specific position (i.e., back of the hat)
         for(var y = 0; y < this.height; y++) {
             for(var x = 0; x < this.width; x++) {
-                client.setPixel((y * this.width) + x, this.buffer[y][x].g, this.buffer[y][x].r, this.buffer[y][x].b);
-//                console.log('ledAddress=' + ((y * this.width) + x) + ',x=' + x, ',y=' + y);
+                var xTrans = x + xOffset;
+                if(xTrans >= this.width) {
+                    xTrans = xTrans - this.width;
+                } else if(xTrans < 0) {
+                    xTrans = this.width + xTrans;
+                }
+                client.setPixel((y * this.width) + xTrans, this.buffer[y][x].g, this.buffer[y][x].r, this.buffer[y][x].b);
             }
         }
-//        console.log('\n\n\n\n\n')
         client.writePixels();
-    }
+    };
 
     this.fillBuffer = function(color) {
         for(var x = 0; x < this.buffer.length; x++) {
@@ -163,7 +175,7 @@ function Canvas() {
         if(y >= 0 && y < this.height && x >= 0 && x < this.width) {
             this.buffer[y][x] = color;
         }
-    }
+    };
 
     this.drawString = function(text, xOffset, yOffset, color) {
         for(var i = 0; i < text.length; i++) {
@@ -181,6 +193,18 @@ function Canvas() {
                     if(font[y][x + (charCode * 6)] != ' ') {
                         this.drawPixel(x + (i * 6) + xOffset, y + yOffset, color);
                     }
+                }
+            }
+        }
+    };
+
+    this.drawSprite = function(frames, frameIndex, width, xOffset, yOffset, color) {
+        var frameOffset = frameIndex * width;
+
+        for(var x = 0; x < 6; x++) {
+            for(var y = 0; y < this.height; y++) {
+                if(frames[y][x + frameOffset] != ' ') {
+                    this.drawPixel(x + xOffset, y + yOffset, color);
                 }
             }
         }
@@ -218,7 +242,34 @@ if(process.argv[2]) {
     // default to showing just on fade candy
     canvas.initialize(false, true);
 }
+if(process.argv[3]) {
+    canvas.switchToAnimation(process.argv[3]);
+}
 canvas.run();
+
+function Pacman() {
+    this.frameCounter = 0;
+
+    this.initialize = function(canvas) {}
+
+    this.update = function(canvas) {
+        var xPos = Math.floor(this.frameCounter / 2) - 8;
+
+        canvas.fillBuffer(new RGB(0,0,0));
+        canvas.drawSprite(pacman, this.frameCounter % 2, 8, xPos, 0, new RGB(255,255,0));
+
+        for(var x = 0; x < canvas.width; x++) {
+            if((x % 4) === 0 && x > (xPos + 4)) {
+                canvas.drawPixel(x, Math.floor(canvas.height / 2), new RGB(255,255,255));
+            }
+        }
+
+        this.frameCounter++;
+        if(this.frameCounter > (canvas.width + 16) * 2) {
+            this.frameCounter = 0;
+        }
+    }
+}
 
 function Random() {
     this.FRAME_LIMIT = 150;
@@ -238,6 +289,7 @@ function Random() {
         this.animations.push(new ScrollingText('PENELOPE RULES', new RGB(0,0,255)));
         this.animations.push(new Rain());
         this.animations.push(new Fireworks());
+        this.animations.push(new Pacman());
     }
 
     this.update = function(canvas) {
@@ -252,7 +304,7 @@ function Random() {
 }
 
 function PulsingPixels() {
-    this.TTL = 5;
+    this.TTL = 16;
     this.pixels = [];
 
     this.initialize = function(canvas) {
@@ -260,15 +312,7 @@ function PulsingPixels() {
     }
 
     this.update = function(canvas) {
-        if(this.pixels.length < 20) {
-            this.pixels.push({
-                ttl: this.TTL,
-                h: Math.random(),
-                s: 1,
-                v: 0,
-                x: Math.floor(Math.random() * 16),
-                y: Math.floor(Math.random() * 6)
-            });
+        if(this.pixels.length < 15) {
             this.pixels.push({
                 ttl: this.TTL,
                 h: Math.random(),
@@ -285,7 +329,12 @@ function PulsingPixels() {
             var p = this.pixels[i];
             canvas.drawPixel(p.x, p.y, hsvToRgb(p.h, p.s, p.v));
             p.ttl--;
-            p.v += 1.0 / this.TTL;
+            var half_ttl = this.TTL / 2;
+            if(p.ttl < half_ttl) {
+                p.v = (p.ttl + 1) / half_ttl;
+            } else {
+                p.v = (this.TTL - p.ttl) / (this.TTL / 2);
+            }
             if(p.ttl <= 0) {
                 this.pixels.splice(i, 1);
                 i--;
@@ -411,8 +460,8 @@ function Equalizer() {
         for(var x = 0; x < canvas.width; x++) {
             var bar = this.bars[x];
             var bar_height = Math.floor(((this.counter + 1) / this.CYCLE_TIME) * bar.max);
-            for(var y = 0; y < bar_height; y++) {
-                canvas.drawPixel(x, canvas.height - y, hsvToRgb(bar.h, 1, y / canvas.height));
+            for(var y = 0; y <= bar_height; y++) {
+                canvas.drawPixel(x, canvas.height - y + 1, hsvToRgb(bar.h, 1, y / canvas.height));
             }
         }
 
@@ -435,7 +484,7 @@ function Rain() {
     }
 
     this.update = function(canvas) {
-        if(this.pixels.length < 16) {
+        if(this.pixels.length < 25) {
             var count = Math.floor(Math.random() * 3);
             for(var i = 0; i < count; i++) {
                 this.pixels.push({
@@ -451,7 +500,7 @@ function Rain() {
 
         for(var i = 0; i < this.pixels.length; i++) {
             var p = this.pixels[i];
-            canvas.drawPixel(p.x, p.y, hsvToRgb(p.h, 1, (p.y + 1) / canvas.height));
+            canvas.drawPixel(p.x, p.y, hsvToRgb(p.h, 1, ((p.y + 1) / (canvas.height * 2)) + .5));
             p.y++;
             if(p.y >= canvas.height) {
                 this.pixels.splice(i, 1);
@@ -541,18 +590,21 @@ function Fireworks() {
         if(this.sparks.length < 5) {
             var hue = Math.random();
             var x = Math.floor(Math.random() * 14) + 1;
-            for(var i = 0; i < 10; i++) {
+            for(var i = 0; i < 15; i++) {
                 var life = 8 + Math.floor(Math.random() * 5) - 1;
                 var sparkHue = hue + (Math.random() * .05) - .025;
                 if(sparkHue >= 1) {
                     sparkHue -= 1;
                 }
+                if(sparkHue < 0) {
+                    sparkHue += 1;
+                }
                 this.sparks.push({
                     x: x,
                     y: (canvas.height / 2) - 1,
                     h: sparkHue,
-                    deltaX: (Math.random() * 3) - 1,
-                    deltaY: (Math.random() * 3) - 1,
+                    deltaX: Math.cos(Math.random() * 2 * 3.14159),
+                    deltaY: Math.sin(Math.random() * 2 * 3.14159),
                     life: life,
                     ttl: life
                 });
@@ -570,7 +622,7 @@ function Fireworks() {
             var spark = this.sparks[i];
             spark.x += spark.deltaX;
             spark.y += spark.deltaY;
-            spark.deltaY += .25;
+            spark.deltaY += .15;
             spark.ttl--;
 
             if(spark.ttl <= 0) {
