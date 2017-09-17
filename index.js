@@ -6,11 +6,11 @@ var StovePipeCharacteristic = require('./characteristic');
 
 var FRAME_RATE = 12;
 var font = [
-    "  X   XXXX   XXXX XXX   XXXXX XXXXX  XXX  X   X  XXX      X X  X  X     X   X X   X  XXX  XXXX   XXX  XXXX   XXX  XXXXX X   X X   X X   X X   X X   X XXXXX ",
-    " X X  X   X X     X  X  X     X     X   X X   X   X       X X X   X     XX XX XX  X X   X X   X X   X X   X XX      X   X   X X   X X   X  X X   X X     X  ",
-    "XXXXX XXXX  X     X   X XXX   XXX   X     XXXXX   X       X XX    X     X X X X X X X   X XXXX  X   X XXXX   XX     X   X   X  X X  X X X   X     X     X   ",
+    "  X   XXXX   XXXX XXX   XXXX  XXXXX  XXX  X   X  XXX      X X  X  X     X   X X   X  XXX  XXX    XXX  XXXX   XXX  XXXXX X   X X   X X   X X   X X   X XXXXX ",
+    " X X  X   X X     X  X  X     X     X   X X   X   X       X X X   X     XX XX XX  X X   X X  X  X   X X   X XX      X   X   X X   X X   X  X X   X X     X  ",
+    "XXXXX XXXX  X     X   X XXX   XXX   X     XXXXX   X       X XX    X     X X X X X X X   X XXX   X   X XXXX   XX     X   X   X  X X  X X X   X     X     X   ",
     "X   X X   X X     X  X  X     X     X  XX X   X   X   X   X X X   X     X   X X  XX X   X X     X  XX X  X     XX   X   X   X   X   XX XX  X X    X    X    ",
-    "X   X XXXX   XXXX XXX   XXXXX X      XXX  X   X  XXX   XXX  X  X  XXXXX X   X X   X  XXX  X      XXXX X   X  XXX    X    XXX    X    X X  X   X   X   XXXXX "
+    "X   X XXXX   XXXX XXX   XXXX  X      XXX  X   X  XXX   XXX  X  X  XXXXX X   X X   X  XXX  X      XXXX X   X  XXX    X    XXX    X    X X  X   X   X   XXXXX "
 ];
 var pacman = [
     "  XXX     XXXX  ",
@@ -117,6 +117,7 @@ function Canvas() {
         this.animations.push(new Fireworks());          // 11   0x0B
         this.animations.push(new Pacman());             // 12   0x0C
         this.animations.push(new Off());                // 13   0x0D
+        this.animations.push(new ScrollingTextRainbow('PARTY TIME'));
 
         this.animations[this.animationIndex].initialize(this);
     };
@@ -193,6 +194,29 @@ function Canvas() {
                 for(var y = 0; y < this.height; y++) {
                     if(font[y][x + (charCode * 6)] != ' ') {
                         this.drawPixel(x + (i * 6) + xOffset, y + yOffset, color);
+                    }
+                }
+            }
+        }
+    };
+
+    this.drawStringRainbow = function(text, xOffset, yOffset) {
+        for(var i = 0; i < text.length; i++) {
+            var charCode = text.charCodeAt(i);
+            if(charCode >= 65 && charCode <= 90) {
+                charCode -= 65;
+            } else if(charCode >= 97 && charCode <= 122) {
+                charCode -= 97;
+            } else {
+                continue;
+            }
+
+            for(var x = 0; x < 6; x++) {
+                for(var y = 0; y < this.height; y++) {
+                    if(font[y][x + (charCode * 6)] != ' ') {
+                        var hue = i / 6;
+                        hue = hue - Math.floor(hue);
+                        this.drawPixel(x + (i * 6) + xOffset, y + yOffset, hsvToRgb(hue,1,1));
                     }
                 }
             }
@@ -298,7 +322,8 @@ function Random() {
         //this.animations.push(new RacingDot());
         //this.animations.push(new RacingLine());
         this.animations.push(new ScrollingText('MAKER FAIRE', new RGB(255,0,0)));
-        this.animations.push(new ScrollingText('PENELOPE RULES', new RGB(0,0,255)));
+        this.animations.push(new ScrollingText('HELLO', new RGB(0,0,255)));
+        this.animations.push(new ScrollingTextRainbow('PARTY TIME'));
         this.animations.push(new Rain());
         this.animations.push(new Fireworks());
         this.animations.push(new Pacman());
@@ -388,6 +413,24 @@ function ScrollingText(text, color) {
     this.update = function(canvas) {
         canvas.fillBuffer(new RGB(0,0,0));
         canvas.drawString(this.text, this.counter, 0, this.color);
+        this.counter--;
+        if(this.counter < (this.text.length * -6)) {
+            this.counter = 16;
+        }
+    }
+}
+
+function ScrollingTextRainbow(text) {
+    this.counter = 16;  // to put the text off screen initially
+    this.text = text;
+
+    this.initialize = function(canvas) {
+        canvas.fillBuffer(new RGB(0,0,0));
+    }
+
+    this.update = function(canvas) {
+        canvas.fillBuffer(new RGB(0,0,0));
+        canvas.drawStringRainbow(this.text, this.counter, 0);
         this.counter--;
         if(this.counter < (this.text.length * -6)) {
             this.counter = 16;
