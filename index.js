@@ -116,6 +116,7 @@ function Canvas() {
         this.animations.push(new Rain());               // 10   0x0A
         this.animations.push(new Fireworks());          // 11   0x0B
         this.animations.push(new Pacman());             // 12   0x0C
+        this.animations.push(new Off());                // 13   0x0D
 
         this.animations[this.animationIndex].initialize(this);
     };
@@ -246,6 +247,17 @@ if(process.argv[3]) {
     canvas.switchToAnimation(process.argv[3]);
 }
 canvas.run();
+
+function Off() {
+
+    this.initialize = function(canvas) {
+        canvas.fillBuffer(new RGB(0,0,0));
+    }
+
+    this.update = function(canvas) {
+        // do nothing
+    }
+}
 
 function Pacman() {
     this.frameCounter = 0;
