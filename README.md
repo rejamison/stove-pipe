@@ -1,4 +1,10 @@
-# stove-pipe
+# Stove Pipe
+
+This project was to build an RGB LED hat (as in, for your head) with a 5 x 18 grid display for my daughter to wear at the 2017 Mini Maker Faire in Seattle.
+
+The hat is powered by a Pi Zero W connected to a [FadeCandy](https://github.com/scanlime/fadecandy) to control the LEDs.  The hat's structure is 3D printed.
+
+The project took about 7 days, mostly for printing.  I spent about 4 hours actively coding and another 4 hours modeling the parts for 3D printing.
 
 # Materials
 
