@@ -4,9 +4,19 @@ This project was to build an RGB LED hat (as in, for your head) with a 5 x 18 gr
 
 The hat is powered by a Pi Zero W connected to a [FadeCandy](https://github.com/scanlime/fadecandy) to control the LEDs.  The hat's structure is 3D printed.
 
-I spent about 4 hours actively coding and another 4 hours modeling the parts for 3D printing.  The entire project took about 7 days, mostly for printing, and another 2-3 hours for assembly.  
+The LED animation code is written in Node.js and the project includes an iOS/Android app to control the hat using HTML5/JS in [Apache Cordova](https://cordova.apache.org/).
 
-# Materials
+I spent about 4 hours actively coding and another 4 hours modeling the parts for 3D printing.  The entire project took about 7 days, mostly for printing, and another 2-3 hours for assembly.
+
+## 3D Printing
+
+## Assembly
+
+## Software Installation
+
+## Usage
+
+## Bill of Materials
 
 |Tools|
 |---|
