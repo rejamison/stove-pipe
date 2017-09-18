@@ -19,7 +19,7 @@ var pacman = [
     " XXXXX   XXXX   ",
     "  XXX     XXXX  "
 ];
-var client = new OPC('stove-pipe.local', 7890);
+var client = new OPC('127.0.0.1', 7890);
 
 function hsvToRgb(h, s, v) {
     var r, g, b, i, f, p, q, t;
