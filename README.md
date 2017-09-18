@@ -13,6 +13,7 @@ I spent about 4 hours actively coding and another 4 hours modeling the parts for
 |CA Glue|
 |Soldering Iron & Solder|
 |Wire Cutters|
+|Hobby Knife|
 
 |Part|Qty|Cost Each|Total Cost|Link|Note|
 |---|---|---|---|---|---|
