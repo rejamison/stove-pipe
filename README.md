@@ -2,6 +2,8 @@
 
 This project was to build an RGB LED hat (as in, for your head) with a 5 x 18 grid display for my daughter to wear at the 2017 Mini Maker Faire in Seattle.
 
+<img src="https://github.com/rejamison/stove-pipe/raw/master/doc/stove_pipe.gif" width="100%" />
+
 The hat is powered by a Pi Zero W connected to a [FadeCandy](https://github.com/scanlime/fadecandy) to control the LEDs.  The hat's structure is 3D printed.
 
 The LED animation code is written in Node.js and the project includes an iOS/Android app to control the hat using HTML5/JS in [Apache Cordova](https://cordova.apache.org/).
