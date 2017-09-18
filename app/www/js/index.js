@@ -17,6 +17,10 @@
  * under the License.
  */
 var app = {
+    animationCharacteristic: null,
+    service: null,
+    device: null,
+
     // Application Constructor
     initialize: function() {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
@@ -28,6 +32,7 @@ var app = {
     // 'pause', 'resume', etc.
     onDeviceReady: function() {
         console.log("onDeviceReady: Binding UI elements.");
+        var that = this;
         $('#connect_button').click(function() {
             console.log("connect_button.click(): scanning for BLE devices");
             evothings.ble.startScan(
@@ -36,30 +41,92 @@ var app = {
                     console.log("startScan: found device: " + JSON.stringify(device));
                     if(device.name === 'stove-pipe') {
                         console.log('startScan found device named: ' + JSON.stringify(device));
+                        $('#connect_button').prop("disabled", true);
+                        $('#connect_button').html('Connecting...');
 
+                        that.device = device;
                         evothings.ble.stopScan();
 
                         evothings.ble.connectToDevice(
-                            device,
+                            that.device,
                             function(device) {
                                 console.log('connectToDevice connected to: ' + JSON.stringify(device));
+                                that.service = evothings.ble.getService(device, 'EC00');
+                                that.animationCharacteristic = evothings.ble.getCharacteristic(that.service, 'EC0E');
+
+                                evothings.ble.readCharacteristic(
+                                    that.device,
+                                    that.animationCharacteristic,
+                                    function(data) {
+                                        var value = new DataView(data).getUint8(0);
+                                        console.log('readCharacteristic: received value: ' + value);
+                                        $('.animation_button').attr('disabled', false);
+                                        $('.animation_button[data-animation-index=' + value + ']').attr('disabled', true);
+                                    },
+                                    function(error) {
+                                        console.log('ERROR: readCharacteristic: ' + JSON.stringify(error));
+                                    }
+                                );
+                                evothings.ble.enableNotification(
+                                    that.device,
+                                    that.animationCharacteristic,
+                                    function(data) {
+                                        var value = new DataView(data).getUint8(0);
+                                        console.log('receiveNotification: received value: ' + value);
+                                        $('.animation_button').attr('disabled', false);
+                                        $('.animation_button[data-animation-index=' + value + ']').attr('disabled', true);
+                                    },
+                                    function(error) {
+                                        console.log('ERROR: enableNotification: ' + JSON.stringify(error));
+                                    }
+                                );
+
+                                // enable the animation buttons, disable the connect button
+                                $('#connect_button').prop("disabled", true);
+                                $('#connect_button').html('Connected');
+                                $('.animation_button').click(function() {
+                                    var value = parseInt($(this).data('animation-index'));
+                                    console.log('animation_button.click(): writing characteristic value: ' + value);
+                                    var element = $(this);
+                                    evothings.ble.writeCharacteristic(
+                                        that.device,
+                                        that.animationCharacteristic,
+                                        new Uint8Array([value]),
+                                        function() {
+                                            // do nothing, wait for the notification to update the UI
+                                        },
+                                        function(error) {
+                                            console.log('ERROR: writeCharacteristic: ' + JSON.stringify(error));
+                                        }
+                                    );
+                                });
+                                $('.animation_button').prop("disabled", false);
                             },
                             function(device) {
                                 console.log('connectToDevice disconnected from: ' + JSON.stringify(device));
                             },
                             function(error) {
-                                console.log('connectToDevice error: ' + JSON.stringify(error));
+                                console.log('ERROR: connectToDevice: ' + JSON.stringify(error));
                             }
                         );
                     }
                 },
                 function(error)
                 {
-                    console.log('startScan error: ' + JSON.stringify(error));
+                    console.log('ERROR: startScan: ' + JSON.stringify(error));
                 }
             );
         });
     }
 };
+
+function findElementWithData(selector, key, value, callback) {
+    $(selector).forEach(function() {
+       if($(this).data(key) === value) {
+           callback($(this));
+       }
+    });
+    callback(null);
+}
 
 app.initialize();

@@ -29,11 +29,11 @@ body {
     background-image:-webkit-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
     background-image:-ms-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
     background-image:-webkit-gradient(
-        linear,
-        left top,
-        left bottom,
-        color-stop(0, #A7A7A7),
-        color-stop(0.51, #E4E4E4)
+            linear,
+            left top,
+            left bottom,
+            color-stop(0, #A7A7A7),
+            color-stop(0.51, #E4E4E4)
     );
     background-attachment:fixed;
     font-family:'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
@@ -48,16 +48,8 @@ body {
 .app {
 }
 
-#connect_button {
-    display: block;
-    margin: auto;
-    margin-top: 2vh;
-    font-size: 4vh;
-    padding: 1vh;
-}
-
 h1 {
-    font-size: 6vh;
+    font-size: 4vh;
     font-weight: bold;
     margin: 0px;
     margin-top: 10vh;
@@ -67,12 +59,43 @@ h1 {
 
 }
 
+button {
+    border-radius: 1vh;
+    background-color: #008800;
+    color: #FFFFFF;
+    font-weight: bold;
+    border: none;
+    font-size: 3vh;
+    padding: 1.5vh;
+    width: 60vw;
+}
+
+button:disabled {
+    background-color: #888888;
+}
+
+button#connect_button {
+    display: block;
+    margin: auto;
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+    padding: 2vh;
+}
+
+button.animation_button {
+    display: block;
+    margin: auto;
+    font-size: 2vh;
+    width: 75vw;
+    margin-bottom: 2vh;
+}
+
 @keyframes fade {
     from { opacity: 1.0; }
     50% { opacity: 0.4; }
     to { opacity: 1.0; }
 }
- 
+
 @-webkit-keyframes fade {
     from { opacity: 1.0; }
     50% { opacity: 0.4; }
