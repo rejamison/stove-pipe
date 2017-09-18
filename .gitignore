@@ -2,3 +2,7 @@ node_modules/
 .DS_Store
 ._*
 .idea/
+platforms/
+plugins/
+node_modules/
+hooks/
