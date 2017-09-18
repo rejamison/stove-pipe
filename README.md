@@ -48,3 +48,9 @@ Wow, more than I expected before adding it up.  Of course, I had most of this st
 If I were building it again, I'd probably switch to an LED strip, which is a lot cheaper per LED (~$15 / 100 LEDs vs. $66 / 100 LEDs).  The cheaper battery, DIY cables, a barebones Pi Zero W and ditching the hat saves another $66, for a hypothetical total of $165.
 
 If you're really looking for a cheap project, then you can get 1kg of cheap PLA for ~$25 and switch to a nano Arduino for ~$5 and skip the FadeCandy, though you'd have to roll your own code and drop the BLE support.  That gets the project into the ~$90-100 range which is mostly battery, filament and LEDs.
+
+## Future Ideas
+
+I'll probably never get to these, but here's some stuff I'd do with more time:
+
+* Add a BLE characteristic that allows you to shutdown the Pi cleanly.
