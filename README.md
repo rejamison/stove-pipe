@@ -12,9 +12,10 @@ I spent about 4 hours actively coding and another 4 hours modeling the parts for
 
 ## 3D Printing
 
+<img align="right" width="40%" src="https://github.com/rejamison/stove-pipe/raw/master/cad/perspective.png" />
+
 The hat is made up of 16 parts in 8 layers.
 
-<img src="https://github.com/rejamison/stove-pipe/raw/master/cad/perspective.png" width="50%" style="float: right;"/>
 
 |||
 |---|---|
