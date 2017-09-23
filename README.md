@@ -16,17 +16,14 @@ I spent about 4 hours actively coding and another 4 hours modeling the parts for
 
 The hat is made up of 16 parts in 8 layers.
 
-
-|||
-|---|---|
-|top_half.stl|top_half.stl|
-|ring_even_half.stl|ring_even_half.stl|
-|ring_odd_half.stl|ring_odd_half.stl|
-|ring_even_half.stl|ring_even_half.stl|
-|ring_odd_half.stl|ring_odd_half.stl|
-|ring_even_half.stl|ring_even_half.stl|
-|ring_odd_half.stl|ring_odd_half.stl|
-|bottom_half_left.stl|bottom_half_right.stl|
+* top_half.stl, top_half.stl
+* ring_even_half.stl|ring_even_half.stl|
+* ring_odd_half.stl|ring_odd_half.stl|
+* ring_even_half.stl|ring_even_half.stl|
+* ring_odd_half.stl|ring_odd_half.stl|
+* ring_even_half.stl|ring_even_half.stl|
+* ring_odd_half.stl|ring_odd_half.stl|
+* bottom_half_left.stl|bottom_half_right.stl|
 
 STL files are located in the cad/ sub-directory of the project.
 
