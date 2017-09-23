@@ -14,20 +14,34 @@ I spent about 4 hours actively coding and another 4 hours modeling the parts for
 
 <img align="right" width="40%" src="https://github.com/rejamison/stove-pipe/raw/master/cad/perspective.png" />
 
-The hat is made up of 16 parts in 8 layers.
+The hat is made up of 16 parts in 8 layers.  Each layer is split in two since I couldn't fit an entire ring onto my Ultimaker 2's 200x200 build plate.  The LED rings come in "odd" and "even" flavors so that the seam between halves doesn't line up between layers, making the assembled structure a bit sturdier.  If you have a larger printer, assembly could be greatly simplified by merging the halves of each layer together.
 
 * top_half.stl, top_half.stl
-* ring_even_half.stl|ring_even_half.stl|
-* ring_odd_half.stl|ring_odd_half.stl|
-* ring_even_half.stl|ring_even_half.stl|
-* ring_odd_half.stl|ring_odd_half.stl|
-* ring_even_half.stl|ring_even_half.stl|
-* ring_odd_half.stl|ring_odd_half.stl|
-* bottom_half_left.stl|bottom_half_right.stl|
+* ![red](https://placehold.it/15/f03c15/000000?text=+) `ring_even_half.stl`, ![red](https://placehold.it/15/f03c15/000000?text=+) `ring_even_half.stl`
+* ![blue](https://placehold.it/15/c5f015/000000?text=+)`ring_odd_half.stl`, ![blue](https://placehold.it/15/c5f015/000000?text=+) `ring_odd_half.stl`
+* ![green](https://placehold.it/15/1589F0/000000?text=+) `ring_even_half.stl`, ![green](https://placehold.it/15/1589F0/000000?text=+) `ring_even_half.stl`
+* ![blue](https://placehold.it/15/c5f015/000000?text=+)`ring_odd_half.stl`, ![blue](https://placehold.it/15/c5f015/000000?text=+) `ring_odd_half.stl`
+* ![green](https://placehold.it/15/1589F0/000000?text=+) `ring_even_half.stl`, ![green](https://placehold.it/15/1589F0/000000?text=+) `ring_even_half.stl`
+* ![blue](https://placehold.it/15/c5f015/000000?text=+) `ring_odd_half.stl`, ![blue](https://placehold.it/15/c5f015/000000?text=+) `ring_odd_half.stl`
+* ![green](https://placehold.it/15/1589F0/000000?text=+) `ring_even_half.stl`, ![green](https://placehold.it/15/1589F0/000000?text=+) `ring_even_half.stl`
+* ![yello](https://placehold.it/15/F0DE14/000000?text=+) `bottom_half_left.stl`, ![yello](https://placehold.it/15/F0DE14/000000?text=+) `bottom_half_right.stl`
 
-STL files are located in the cad/ sub-directory of the project.
+`mount_plate.stl` is provided to mount the pi zero and fadecandy to, if desired.
+
+STL files are located in the `cad/` sub-directory of the project and also on [Thingiverse](https://www.thingiverse.com/thing:2550326).
+
+* Printed using white Polymaker Polymax PLA.
+* 100% infill is required for even diffusion of the LEDs through the plastic.
+* Full build with 6 LED layers requires ~1kg of filament.
+* Sized for a 27" circumference, which accomodates a 23" head with room ~1/2" padding, which is fairly large.  You'll probably want to resize for your own head:
+  * Figure out how big around your head is, then add 3" to the circumference to give room for about ~1/2" of padding.
+  * Go to the OpenSCAD source file and play with the "pitch" parameter, which dictates the size of each LED cell in millimeters.  Smaller cells mean a smaller hat.
+  * The "Outer Circumference in Inches" in the output console shows the current circumference based on the value you've set for "pitch".
+  * Render each of the parts by commenting/uncommenting the appropriate module.
 
 ## Assembly
+
+I simply glued the layers on top of each other with CA glue.
 
 ## Software Installation
 
