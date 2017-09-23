@@ -33,7 +33,7 @@ STL files are located in the `cad/` sub-directory of the project and also on [Th
 * Printed using white Polymaker Polymax PLA.
 * 100% infill is required for even diffusion of the LEDs through the plastic.
 * Full build with 6 LED layers requires ~1kg of filament.
-* Sized for a 27" circumference, which accomodates a 23" head with room ~1/2" padding, which is fairly large.  You'll probably want to resize for your own head:
+* Sized for a 27" circumference, which accomodates a 23" head with room for ~1/2" padding, which is quite large.  You'll probably want to resize for your own head:
   * Figure out how big around your head is, then add 3" to the circumference to give room for about ~1/2" of padding.
   * Go to the OpenSCAD source file and play with the "pitch" parameter, which dictates the size of each LED cell in millimeters.  Smaller cells mean a smaller hat.
   * The "Outer Circumference in Inches" in the output console shows the current circumference based on the value you've set for "pitch".
@@ -41,7 +41,11 @@ STL files are located in the `cad/` sub-directory of the project and also on [Th
 
 ## Assembly
 
-I simply glued the layers on top of each other with CA glue.
+Execept for the top, I glued the layers on top of each other with CA glue.  I used screws between the halves of the LED rings, but these weren't really necessary as the entire structure seemed to hold together well with just glue.  
+
+For the top, I used clear tape so it could be easily removed for access to the LED cells from both ends.
+
+Once assembled, the bottom of the hat 
 
 ## Software Installation
 
