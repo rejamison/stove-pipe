@@ -57,7 +57,7 @@ Since the Pi uses 5V, I just connected a 6-foot Micro-USB to USB-B cable to the 
 
 I used high-density foam from a craft store to pad the bottom of the hat, cutting thin strips and building up layers as I tried it on my daughter's head until the fit was comfortable and stable.  
 
-I used the brim of a cheap hat I bought on Amazon, cutting off the top of the hat and inserting the remainder into the bottom of the 3D printed tube.  This ended up being more trouble than it's worth, as it was finicky to fit right with its compound curve and ultimately made the top-heavy hat unstable.  For V2, I'd just print a brim, or tack on a bit of foam-board.
+I used the brim of a cheap hat I bought on Amazon, cutting off the top of the hat and inserting the remainder into the bottom of the 3D printed tube.  This ended up being more trouble than it's worth, as it was finicky to fit right with its compound curve and ultimately made the top-heavy hat even more unstable.  For V2, I'd just print a brim, or tack on a bit of foam-board.
 
 ## Software Installation
 
