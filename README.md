@@ -1,6 +1,6 @@
 # Stove Pipe
 
-This project was to build an RGB LED hat (as in, for your head) with a 5 x 18 grid display for my daughter to wear at the 2017 Mini Maker Faire in Seattle.
+This project was to build an RGB LED hat with a 5 x 18 grid display for my daughter to wear at the 2017 Mini Maker Faire in Seattle.
 
 <img src="https://github.com/rejamison/stove-pipe/raw/master/doc/stove_pipe.gif" width="100%" />
 
