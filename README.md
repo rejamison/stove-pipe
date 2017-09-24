@@ -16,14 +16,13 @@ I spent about 4 hours actively coding and another 4 hours modeling the parts for
 
 The hat is made up of 16 parts in 8 layers.  Each layer is split in two since I couldn't fit an entire ring onto my Ultimaker 2's 200x200 build plate.  The LED rings come in "odd" and "even" flavors so that the seam between halves doesn't line up between layers, making the assembled structure a bit sturdier.  If you have a larger printer, assembly could be greatly simplified by merging the halves of each layer together.
 
-* top_half.stl, top_half.stl
-* ![red](https://placehold.it/15/f03c15/000000?text=+) `ring_even_half.stl`, ![red](https://placehold.it/15/f03c15/000000?text=+) `ring_even_half.stl`
+* ![red](https://placehold.it/15/f03c15/000000?text=+) `top_half.stl`, ![red](https://placehold.it/15/f03c15/000000?text=+)  `top_half.stl`
+* ![green](https://placehold.it/15/1589F0/000000?text=+)`ring_even_half.stl`, ![green](https://placehold.it/15/1589F0/000000?text=+) `ring_even_half.stl`
 * ![blue](https://placehold.it/15/c5f015/000000?text=+)`ring_odd_half.stl`, ![blue](https://placehold.it/15/c5f015/000000?text=+) `ring_odd_half.stl`
 * ![green](https://placehold.it/15/1589F0/000000?text=+) `ring_even_half.stl`, ![green](https://placehold.it/15/1589F0/000000?text=+) `ring_even_half.stl`
 * ![blue](https://placehold.it/15/c5f015/000000?text=+)`ring_odd_half.stl`, ![blue](https://placehold.it/15/c5f015/000000?text=+) `ring_odd_half.stl`
 * ![green](https://placehold.it/15/1589F0/000000?text=+) `ring_even_half.stl`, ![green](https://placehold.it/15/1589F0/000000?text=+) `ring_even_half.stl`
 * ![blue](https://placehold.it/15/c5f015/000000?text=+) `ring_odd_half.stl`, ![blue](https://placehold.it/15/c5f015/000000?text=+) `ring_odd_half.stl`
-* ![green](https://placehold.it/15/1589F0/000000?text=+) `ring_even_half.stl`, ![green](https://placehold.it/15/1589F0/000000?text=+) `ring_even_half.stl`
 * ![yello](https://placehold.it/15/F0DE14/000000?text=+) `bottom_half_left.stl`, ![yello](https://placehold.it/15/F0DE14/000000?text=+) `bottom_half_right.stl`
 
 `mount_plate.stl` is provided to mount the pi zero and fadecandy to, if desired.
@@ -200,7 +199,7 @@ Prices as of 9/17/17.
 
 Wow, more than I expected before adding it up.  Of course, I had most of this stuff laying around, so my only real outlay was the LED strands and the cables.  Everything is scavengable except the filament.
 
-If I were building it again, I'd probably switch to an LED strip, which is a lot cheaper per LED (~$15 / 100 LEDs vs. $66 / 100 LEDs).  The cheaper battery, DIY cables, a barebones Pi Zero W and ditching the hat saves another $66, for a hypothetical total of $165.
+If I were building it again, I'd probably switch to an LED strip, which is a lot cheaper per LED (~$15 / 100 LEDs vs. $66 / 100 LEDs) and would weigh quite a bit less.  The cheaper battery, DIY cables, a barebones Pi Zero W and ditching the hat saves another $66, for a hypothetical total of $165.
 
 If you're really looking for a cheap project, then you can get 1kg of cheap PLA for ~$25 and switch to a nano Arduino for ~$5 and skip the FadeCandy, though you'd have to roll your own code and drop the BLE support.  That gets the project into the ~$90-100 range which is mostly battery, filament and LEDs.
 
@@ -209,3 +208,4 @@ If you're really looking for a cheap project, then you can get 1kg of cheap PLA 
 I'll probably never get to these, but here's some stuff I'd do with more time:
 
 * Add a BLE characteristic that allows you to shutdown the Pi cleanly.
+* Switch to an LED strip, instead of the bulky strands.
