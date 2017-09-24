@@ -17,6 +17,8 @@
  * under the License.
  */
 var app = {
+    BT_DEVICE_NAME: 'stove-pipe',
+
     animationCharacteristic: null,
     service: null,
     device: null,
@@ -39,7 +41,7 @@ var app = {
                 function(device)
                 {
                     console.log("startScan: found device: " + JSON.stringify(device));
-                    if(device.name === 'stove-pipe') {
+                    if(device.name === that.BT_DEVICE_NAME) {
                         console.log('startScan found device named: ' + JSON.stringify(device));
                         $('#connect_button').prop("disabled", true);
                         $('#connect_button').html('Connecting...');

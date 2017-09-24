@@ -73,7 +73,102 @@ I used the brim of a cheap hat I bought on Amazon, cutting off the top of the ha
 
 ## Software Installation
 
+I setup the Pi Zero W with the Raspian Stretch Lite image from [raspberrypi.org](https://www.raspberrypi.org/downloads/raspbian/), configuring wifi and enabling SSH in the `/boot/` image on the micro SD card before inserting it onto the pi.
+
+After booting the Pi and SSH'ing in, I:
+* Changed the password:  
+  ```bash
+  passwd
+  ```
+* Updated everything: 
+  ```bash
+  sudo apt-get update
+  sudo apt-get upgrade
+  ```
+* Install git:  
+  ```bash
+  sudo apt-get install git
+  ```
+* [Install nvm](https://github.com/creationix/nvm#install-script).
+* [Install node using nvm](https://github.com/creationix/nvm#usage).
+* [Changed the hostname](https://thepihut.com/blogs/raspberry-pi-tutorials/19668676-renaming-your-raspberry-pi-the-hostname) to `stove-pipe`.
+
+I grabbed the project code inside the `/home/pi` directory:
+
+```bash
+git clone git@github.com:rejamison/stove-pipe.git
+cd stove-pipe
+npm install
+```
+
+FadeCandy provides a server that gives you a web-based interface for interacting with the LEDs.  I [built the server](https://github.com/scanlime/fadecandy/tree/master/server).  To test things out, run the server in the background and try running the LED animation script:
+
+```bash
+cd /home/pi/fadecandy/server
+fcserver &
+cd /home/pi/stove-pipe
+node index.js FadeCandy
+```
+
+You can also tell the animation script to render the animation to the console:
+
+```bash
+node index.js Console
+```
+
+If you're developing your own animations, I recommend doing so on your development machine and connecting remotely to the FadeCandy server on the Pi (vs. trying to develop locally on the Pi).  To do that, just modify the hostname in [index.js](https://github.com/rejamison/stove-pipe/blob/master/index.js) to your Pi's:
+
+```javascript
+var client = new OPC('stove-pipe.local', 7890);
+```
+
+**NOTE: Be careful about accidentally pushing this change up to the Pi.  It will work fine as long as it's connected to wifi, but you'll find it doesn't work if it's not able to connect to a network because the `.local` hostname won't route to anything.**
+ 
+Once everything is good to go, I moved the binary to a global bin directory and set the server and my LED animation script to run on boot:
+
+```bash
+sudo mv fcserver /usr/local/bin
+sudo nano /etc/rc.local
+```
+
+Adding the following to `rc.local` before the last `exit 0` line:
+
+```bash
+/usr/local/bin/fcserver /home/pi/stove-pipe/fcserver_config.json >/var/log/fcserver.log 2>&1 &
+/home/pi/.nvm/versions/node/v8.5.0/bin/node /home/pi/stove-pipe/index.js FadeCandy
+```
+
+**NOTE:  You might need to adjust the node path above depending on what's the latest when you install using NVM.  You can figure it out by running: `which node`.**
+
+Reboot the Pi and the animation should start running!
+
+To control the hat, I built a BLE characteristic into the animation script to control which animation is playing and built a small mobile app to connect to the pi.  To build the app using Apache Cordova, from your development machine:
+* [Setup Apache Cordova for iOS or Android](https://cordova.apache.org/docs/en/latest/).
+* Grab the development project:  
+  ```bash
+  git clone git@github.com:rejamison/stove-pipe.git
+  ```
+* Install the app using cordova.  
+  * For Android:  
+    ```bash
+    cd stove-pipe/app
+    cordova platform add android
+    cordova run android
+    ```
+  * For iOS:  
+    ```bash
+    cd stove-pipe/app
+    cordova platform add ios
+    cordova run ios
+    ```
+
 ## Usage
+
+<img align="right" width="30%" src="https://github.com/rejamison/stove-pipe/raw/master/cad/app_screenshot.gif" />
+
+To use the app, just open it up on your device and click the "Connect" button.  After it connects, all the animation buttons should turn green and you should be able to switch the running animation by clicking any of the buttons.
+
+If the app has trouble connecting, it may be because you're using a different hostname for the Pi.  You can change the `BT_DEVICE_NAME` parameter in the app's code [app/www/js/index.js](https://github.com/rejamison/stove-pipe/blob/master/app/www/js/index.js) or change the hostname of the device to `stove-pipe`.
 
 ## Bill of Materials
 
