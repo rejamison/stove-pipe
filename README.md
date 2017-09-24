@@ -41,21 +41,23 @@ STL files are located in the `cad/` sub-directory of the project and also on [Th
 
 ## Assembly
 
-<img align="right" width="30%" src="https://github.com/rejamison/stove-pipe/raw/master/cad/led_holes.jpg" />
-
 Execept for the top, I glued the layers on top of each other with CA glue.  I used screws between the halves of the LED rings, but these weren't really necessary as the entire structure seemed to hold together well with just glue.  
+
+<img align="right" width="30%" src="https://github.com/rejamison/stove-pipe/raw/master/cad/led_holes.jpg" />
 
 Once the rings were assembled, I plugged the individual RGB LEDs on the strand into the holes in each cell.  The holes are sized to the built-in fastening tabs on the RGB strand I purchased, so no gluing necessary.  Be sure to layout the LEDs in a continuous spiral, starting at the top ring and as you complete a layer, being sure to start the next layer in the same column as the last.  The strands I purchased came with 50 LEDs, but I did NOT connect them end-to-end, since the FadeCandy addresses at most 64 LEDs on a single run.
 
 <img align="right" width="30%" src="https://github.com/rejamison/stove-pipe/raw/master/cad/mount_plate.jpg" />
 
-I soldered pin headers to the FadeCandy, rather than directly solder wires to the board, for easy future scavenging.
+I soldered pin headers to the FadeCandy, rather than directly solder wires to the board, for easy future scavenging. 
 
-I mounted the Pi using 2.5M screws to the mount plate and snapped in the FadeCandy.  They're connected to each other with a short Micro-USB to Mini-USB cable.  
+I mounted the Pi using 2.5M screws to the mount plate and snapped in the FadeCandy.  They're connected to each other with a short Micro-USB to Mini-USB cable. 
 
-<img align="right" width="30%" src="https://github.com/rejamison/stove-pipe/raw/master/cad/wiring.svg" />
+The 0 and 1 LED banks of the FadeCandy each include a signal and ground connection.  The data pins of the first strand is connected to 0 and the second strand to 1.  
 
-The 0 and 1 LED banks of the FadeCandy each include a signal and ground connection.  The data pins of the first strand is connected to 0 and the second strand to 1.  The FadeCandy ground pins should be shared with the ground of the LED strands, so I connected them to a terminal on a female 5.1mm x 2.1mm barrel jack connector.
+<img align="right" width="30%" src="https://github.com/rejamison/stove-pipe/raw/master/cad/wiring.png" />
+
+The FadeCandy ground pins should be shared with the ground of the LED strands, so I connected them to a terminal on a female 5.1mm x 2.1mm barrel jack connector.
 
 The LED strands I chose use 12V vs. 5V, mostly because it was easier to get higher-amperage 12V batteries.  To create a 12V "rail", I connected both strands in parallel to the barrel jack, then connected a 6-foot extension to the jack.
 
@@ -63,9 +65,9 @@ Since the Pi uses 5V, I just connected a 6-foot Micro-USB to USB-B cable to the 
 
 **NOTE:  Since we're using both 12V and 5V, I recommend triple-checking your connections before applying power for the first time to avoid destroying your Pi.**
 
-I used high-density foam from a craft store to pad the bottom of the hat, cutting thin strips and building up layers as I tried it on my daughter's head until the fit was comfortable and stable.  
-
 <img align="right" width="30%" src="https://github.com/rejamison/stove-pipe/raw/master/cad/hat_bottom.jpg" />
+
+I used high-density foam from a craft store to pad the bottom of the hat, cutting thin strips and building up layers as I tried it on my daughter's head until the fit was comfortable and stable.  
 
 I used the brim of a cheap hat I bought on Amazon, cutting off the top of the hat and inserting the remainder into the bottom of the 3D printed tube.  This ended up being more trouble than it's worth, as it was finicky to fit right with its compound curve and ultimately made the top-heavy hat even more unstable.  For V2, I'd just print a brim, or tack on a bit of foam-board.
 
