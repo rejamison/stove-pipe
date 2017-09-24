@@ -164,7 +164,7 @@ To control the hat, I built a BLE characteristic into the animation script to co
 
 ## Usage
 
-<img align="right" width="30%" src="https://github.com/rejamison/stove-pipe/raw/master/cad/app_screenshot.gif" />
+<img align="right" height="150px" src="https://github.com/rejamison/stove-pipe/raw/master/cad/app_screenshot.jpeg" />
 
 To use the app, just open it up on your device and click the "Connect" button.  After it connects, all the animation buttons should turn green and you should be able to switch the running animation by clicking any of the buttons.
 
