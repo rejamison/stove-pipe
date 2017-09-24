@@ -41,9 +41,9 @@ STL files are located in the `cad/` sub-directory of the project and also on [Th
 
 ## Assembly
 
-Execept for the top, I glued the layers on top of each other with CA glue.  I used screws between the halves of the LED rings, but these weren't really necessary as the entire structure seemed to hold together well with just glue.  
-
 <img align="right" width="30%" src="https://github.com/rejamison/stove-pipe/raw/master/cad/led_holes.jpg" />
+
+Execept for the top, I glued the layers on top of each other with CA glue.  I used screws between the halves of the LED rings, but these weren't really necessary as the entire structure seemed to hold together well with just glue.  
 
 Once the rings were assembled, I plugged the individual RGB LEDs on the strand into the holes in each cell.  The holes are sized to the built-in fastening tabs on the RGB strand I purchased, so no gluing necessary.  Be sure to layout the LEDs in a continuous spiral, starting at the top ring and as you complete a layer, being sure to start the next layer in the same column as the last.  The strands I purchased came with 50 LEDs, but I did NOT connect them end-to-end, since the FadeCandy addresses at most 64 LEDs on a single run.
 
