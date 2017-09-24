@@ -47,7 +47,11 @@ Once the rings were assembled, I plugged the individual RGB LEDs on the strand i
 
 I soldered pin headers to the FadeCandy, rather than directly solder wires to the board, for easy future scavenging.
 
-I mounted the Pi using 2.5M screws to the mount plate and snapped in the FadeCandy.  They're connected to each other with a short Micro-USB to Mini-USB cable.  The 0 and 1 LED banks of the FadeCandy each include a signal and ground connection.  The data pins of the first strand is connected to 0 and the second strand to 1.  The FadeCandy ground pins should be shared with the ground of the LED strands, so I connected them to a terminal on a female 5.1mm x 2.1mm barrel jack connector.
+I mounted the Pi using 2.5M screws to the mount plate and snapped in the FadeCandy.  They're connected to each other with a short Micro-USB to Mini-USB cable.  
+
+<img align="right" width="40%" src="https://github.com/rejamison/stove-pipe/raw/master/cad/wiring.svg" />
+
+The 0 and 1 LED banks of the FadeCandy each include a signal and ground connection.  The data pins of the first strand is connected to 0 and the second strand to 1.  The FadeCandy ground pins should be shared with the ground of the LED strands, so I connected them to a terminal on a female 5.1mm x 2.1mm barrel jack connector.
 
 The LED strands I chose use 12V vs. 5V, mostly because it was easier to get higher-amperage 12V batteries.  To create a 12V "rail", I connected both strands in parallel to the barrel jack, then connected a 6-foot extension to the jack.
 
